@@ -3,10 +3,17 @@ module Server
 open Giraffe
 open Saturn
 
+open Grpc.HealthCheck
+//open Grpc.Reflection;
 open Microsoft.Extensions.DependencyInjection
 open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Text.Json.Serialization
+open System.Runtime.Serialization
+open Microsoft.AspNetCore.Server.Kestrel.Core
+open Grpc.Health.V1
+open Grpc.Core
+open System.Text.Json
 
 type Stub = {
   Service: string
@@ -14,11 +21,10 @@ type Stub = {
   Input: Input
   Output: Output
 }
-and Input = {
-  Equals: Map<string, obj> option
-  Contains: Map<string, obj> option
-  Matches: Map<string, obj> option
-}
+and Input = 
+  | Equals of Map<string, obj>
+  | Contains of Map<string, obj>
+  | Matches of Map<string, obj>
 and Output = {
   Data: Map<string, obj>
   Error: string
@@ -42,53 +48,89 @@ module ConcurrentDict =
   
   let make (items: seq<'a * 'b>) = items |> Seq.map KeyValuePair |> ConcurrentDictionary<'a,'b>
 
-let services = Services()
+module Store =
+  let private stubs = Services()
 
-let webApp =
-  router {
-    get Route.clear (fun next ctx -> 
-      task {
-        services.Clear()
-        return! Successful.ACCEPTED "OK" next ctx
-    })
-    get Route.list (fun next ctx ->
-      task {
-        return! ctx.WriteJsonChunkedAsync services
-    })
-    post Route.add (fun next ctx -> 
-      task {
-        let! stub = ctx.BindJsonAsync<Stub>()
-        
-        let add =
-          services |> ConcurrentDict.addOrReplace stub.Service
-        
-        let replace =
-          add <| fun _ -> seq { stub.Method, [stub.Input, stub.Output] } |> ConcurrentDict.make
-
-        let z =
-            replace <| fun _ methods ->
-            let add = methods |> ConcurrentDict.addOrReplace stub.Method
-            let replace = add <| fun _ -> [stub.Input, stub.Output ]
-            replace <| fun _ _ -> [ stub.Input, stub.Output ]
-        z |> ignore
-        return! Successful.OK "OK" next ctx
+  let addOrReplace (s:Stub) =
+    let add = stubs |> ConcurrentDict.addOrReplace s.Service
+    let replace = add <| fun _ -> seq { s.Method, [s.Input, s.Output] } |> ConcurrentDict.make
+    (replace <| fun _ methods ->
+      let add = methods |> ConcurrentDict.addOrReplace s.Method
+      let replace = add <| fun _ -> [s.Input, s.Output ]
+      replace <| fun _ _ -> [ s.Input, s.Output ])
+    |> ignore
+  
+  let list () = 
+    query {
+      for KeyValue(svc, methods) in stubs do
+      for KeyValue(method, mappings) in methods do
+      for (a, b) in mappings do
+      select {
+        Service = svc
+        Method = method
+        Input = a
+        Output = b
       }
-    )
-  }
+    }
+
+  let findStub<'a, 'b when 'a :> Google.Protobuf.IMessage and 'b :> Google.Protobuf.IMessage and 'b: (new:unit -> 'b) > (serializer:Json.ISerializer) (msg: 'a) (service: string) (method:string) =
+
+    let message = Google.Protobuf.JsonFormatter.Default.Format(msg)
+    let map = serializer.Deserialize<Map<string, obj>>(message)
+
+    match stubs.TryGetValue(service) with
+    | true, methods ->
+      match methods.TryGetValue(method) with
+      | true, mappings ->
+        mappings |> Seq.find(fun (i, o) ->
+          match i with
+          | Equals x -> true
+          | Contains x -> true 
+          | Matches x -> true
+        ) |> fun (i,o) -> Google.Protobuf.JsonParser.Default.Parse<'b>(serializer.SerializeToString(o))
+      | _ -> failwith "TODO: make providing the default impl possible and easy"
+    | _ -> failwith "TODO: make providing the default impl possible and easy"
+
+
+  let clear () = stubs.Clear()
+
+let stubControl =
+  router {
+      get Route.clear (fun next ctx -> 
+        Store.clear()
+        Successful.OK "" next ctx
+      )
+      get Route.list (json (Store.list ()))
+      post Route.add (bindJson<Stub> (fun s -> 
+        s |> Store.addOrReplace
+        Successful.OK ""
+      ))
+    }
+
+type MyHealth(serializer: Json.ISerializer) =
+  inherit Grpc.HealthCheck.HealthServiceImpl()
+  override x.Check(request: HealthCheckRequest , context: ServerCallContext) =
+    task {
+      //TODO: dynamic auto-impl
+      let rs = Store.findStub<HealthCheckRequest,HealthCheckResponse> serializer request "HealthServiceImpl" "Check"
+      return rs
+    }
 
 let app =
   application {
-    url "http://0.0.0.0:4771"
-    use_router webApp
+    listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
+    listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
-    use_static "public"
     use_gzip
-    service_config (fun svcs -> 
-       let serializationOptions = SystemTextJson.Serializer.DefaultOptions
     
-       serializationOptions.Converters.Add(JsonFSharpConverter(JsonUnionEncoding.FSharpLuLike))
-
-       svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(serializationOptions))
+    
+    use_grpc_2 MyHealth //TODO: Refleciton doesn't seem to work
+    use_router stubControl
+    service_config (fun svcs -> 
+       let options = SystemTextJson.Serializer.DefaultOptions
+       options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
+       options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
+       svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options))
     )
   }
 
