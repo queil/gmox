@@ -6,6 +6,7 @@ open Microsoft.Extensions.DependencyInjection
 open ProtoBuf.Grpc.Server
 open ProtoBuf.Grpc.Configuration
 open System.Reflection
+open Grpc.Reflection
 open System
 
 module Binder2 =
@@ -31,9 +32,12 @@ type Saturn.Application.ApplicationBuilder with
     ///Adds gRPC Code First endpoint. Passed parameter should be any constructor of the gRPC service implementation.
     member __.UseGrpc<'a, 'b when 'a : not struct>(state, cons: 'b -> 'a) =
         let configureServices (services: IServiceCollection) =
-            services.AddCodeFirstGrpc()
-            services.AddSingleton(BinderConfiguration.Create([|ProtoBufMarshallerFactory.Default |], Binder2.ServiceBinderFrom(services))) |> ignore
-            services.AddCodeFirstGrpcReflection()
+            //services.AddCodeFirstGrpc()
+            services.AddGrpc() |> ignore
+            services.AddGrpcReflection() |> ignore
+            services
+            //services.AddSingleton(BinderConfiguration.Create([|ProtoBufMarshallerFactory.Default |], Binder2.ServiceBinderFrom(services))) |> ignore
+            //services.AddCodeFirstGrpcReflection()
             
 
         let configureApp (app: IApplicationBuilder) =
@@ -43,7 +47,8 @@ type Saturn.Application.ApplicationBuilder with
             app.UseEndpoints (fun endpoints -> 
               
               endpoints.MapGrpcService<'a>() |> ignore
-              endpoints.MapCodeFirstGrpcReflectionService() |> ignore
+              endpoints.MapGrpcReflectionService() |> ignore
+              //endpoints.MapCodeFirstGrpcReflectionService() |> ignore
               
             )
             

@@ -52,6 +52,7 @@ module Store =
   let private stubs = Services()
 
   let addOrReplace (s:Stub) =
+    //TODO: stub Output.Data should be validated on store
     let add = stubs |> ConcurrentDict.addOrReplace s.Service
     let replace = add <| fun _ -> seq { s.Method, [s.Input, s.Output] } |> ConcurrentDict.make
     (replace <| fun _ methods ->
@@ -73,7 +74,7 @@ module Store =
       }
     }
 
-  let findStub<'a, 'b when 'a :> Google.Protobuf.IMessage and 'b :> Google.Protobuf.IMessage and 'b: (new:unit -> 'b) > (serializer:Json.ISerializer) (msg: 'a) (service: string) (method:string) =
+  let findStub<'a, 'b when 'a :> Google.Protobuf.IMessage and 'b :> Google.Protobuf.IMessage and 'b: (new:unit -> 'b) > (serializer:Json.ISerializer) (msg: 'a) (service: string) (method:string) : 'b =
 
     let message = Google.Protobuf.JsonFormatter.Default.Format(msg)
     let map = serializer.Deserialize<Map<string, obj>>(message)
@@ -85,12 +86,11 @@ module Store =
         mappings |> Seq.find(fun (i, o) ->
           match i with
           | Equals x -> true
-          | Contains x -> true 
+          | Contains x -> true
           | Matches x -> true
-        ) |> fun (i,o) -> Google.Protobuf.JsonParser.Default.Parse<'b>(serializer.SerializeToString(o))
-      | _ -> failwith "TODO: make providing the default impl possible and easy"
-    | _ -> failwith "TODO: make providing the default impl possible and easy"
-
+        ) |> fun (i,o) -> Google.Protobuf.JsonParser.Default.Parse<'b>(serializer.SerializeToString(o.Data))
+      | _ -> new 'b()
+    | _ -> new 'b()
 
   let clear () = stubs.Clear()
 
