@@ -15,13 +15,13 @@ open System
 
 let router =
   router {
-      
-      get "/" (fun next ctx -> 
+
+      get "/" (fun next ctx ->
           task {
           return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().list())
         }
       )
-      
+
       get "/clear" (fun next ctx ->
          task {
            ctx.GetService<StubStore>().clear()
@@ -36,8 +36,6 @@ let router =
          }
       )
     }
-
-
 
 let app =
   application {
@@ -57,7 +55,6 @@ let app =
        svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
        svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
     )
-    
   }
 
 run app

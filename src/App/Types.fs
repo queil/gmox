@@ -13,11 +13,11 @@ module Types =
 
   module internal ConcurrentDict =
     open System.Collections.Generic
-    
+
     let addOrReplace  (key: 'a) (d:ConcurrentDictionary<'a,'b>) (addValue:'a -> 'b) (updateValue:'a -> 'b -> 'b) =
       d.AddOrUpdate(key, addValue, updateValue) |> ignore
       d
-    
+
     let make (items: seq<'a * 'b>) = items |> Seq.map KeyValuePair |> ConcurrentDictionary<'a,'b>
 
   type Stub = {
@@ -26,7 +26,7 @@ module Types =
     Input: Input
     Output: Output
   }
-  and Input = 
+  and Input =
     | Equals of Map<string, obj>
     | Contains of Map<string, obj>
     | Matches of Map<string, obj>
@@ -55,22 +55,21 @@ module Types =
       else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
 
     let getGrpcMethod (s:Stub) =
-      let grpcMethod = 
+      let grpcMethod =
         endpoints.Endpoints
         |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
         |> Seq.filter (not << isNull)
         |> Seq.find(fun x -> x.Method.FullName = $"/{s.Service}/{s.Method}")
       grpcMethod.ServiceType.GetMethod(s.Method, BindingFlags.Public ||| BindingFlags.Instance)
 
-
     member _.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
       let chunks = context.Method.Split('/', StringSplitOptions.RemoveEmptyEntries)
-      
+
       let (service, method) =
         match chunks with
         | [| s; m |] -> (s, m)
         | _ -> failwithf "Could not parse method %s" (context.Method)
-      
+
       let default' () = Activator.CreateInstance(responseType (mb :?> MethodInfo)) :?> IMessage
 
       let msg =
@@ -89,13 +88,13 @@ module Types =
       Task.FromResult(msg)
 
     member _.addOrReplace (s:Stub) =
-      
+
       let rsType = s |> (getGrpcMethod >> responseType)
 
       let parser = typeof<JsonParser>.GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
                     .GetGenericMethodDefinition()
                     .MakeGenericMethod(rsType)
-      
+
       let msg = {
         // this is awful - to be fixed (i.e. serialize to deserialize)
         Data = parser.Invoke(JsonParser.Default, [|serialize s.Output.Data|]) :?> IMessage
@@ -108,8 +107,8 @@ module Types =
         let setReplace = setAdd <| fun _ -> [s.Input, msg ]
         setReplace <| fun _ _ -> [ s.Input, msg ])
       |> ignore
-    
-    member _.list () = 
+
+    member _.list () =
       query {
         for KeyValue(svc, methods) in stubs do
         for KeyValue(method, mappings) in methods do
@@ -124,8 +123,8 @@ module Types =
           }
         }
       }
-      
+
     member _.clear () = stubs.Clear()
-    
+
     member x.GetFindStubMethodName () = nameof(x.resolveResponse)
     static member FindStubMethodName = StubStore((fun _ -> ""), null).GetFindStubMethodName ()

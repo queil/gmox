@@ -40,7 +40,7 @@ module Emit =
       let getCurrentMethod = typeof<MethodBase>.GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public ||| BindingFlags.Static)
 
       let il = methodBuilder.GetILGenerator()
-       
+
       il.Emit(OpCodes.Ldarg_0)                 // push Grpc svc on to the stack (this)
       il.Emit(OpCodes.Ldfld, storeFld)         // push Store instance reference on to the stack
       il.Emit(OpCodes.Ldarg_1)                 // push grpc method request reference
