@@ -12,9 +12,8 @@
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.41.0" />
     <PackageReference Include="Grpc.HealthCheck" Version="2.42.0" />
-    <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
-    <PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.0.152" />
     <PackageReference Include="Saturn" Version="0.15.0" />
     <PackageReference Include="Saturn.Extensions.gRPC" Version="0.15.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 </Project>

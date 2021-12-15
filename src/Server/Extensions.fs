@@ -2,42 +2,41 @@ module Saturn
 
 open Saturn
 open Microsoft.AspNetCore.Builder
+
 open Microsoft.Extensions.DependencyInjection
-open ProtoBuf.Grpc.Server
-open ProtoBuf.Grpc.Configuration
 open System.Reflection
-open Grpc.Reflection
 open System
+open System.Threading.Tasks
 
-module Binder2 =
-  type ServiceBinderFrom(services:IServiceCollection) =
-    inherit ServiceBinder()
-    override _.GetMetadata(method: MethodInfo, contractType: Type , serviceType: Type) =
-      let resolvedServiceType =
-        match serviceType with
-        | t when t.IsInterface -> 
-            query {
-              for s in services do
-              where (s.ServiceType = serviceType)
-              select s.ImplementationType
-            } |> Seq.tryExactlyOne
-              |> Option.defaultValue t
-        | t -> t
-      base.GetMetadata(method, contractType, resolvedServiceType);
+type Store2 =
+  val mutable store : string list
+  new () = {store = ["test"]}
+  // member x.findStub2 (svc:string) (method: string) (rs: Type) (rq: IMessage) =
+  //   Activator.CreateInstance(rs) :?> IMessage
+  member x.findStub2 (z:obj) =
+     Task.FromResult(Grpc.Health.V1.HealthCheckResponse())
 
+module GrpcNonGeneric =
+  open Microsoft.AspNetCore.Routing
+  let MapGrpcService (serviceType: Type) (builder: IEndpointRouteBuilder)  =
+    let r = Activator.CreateInstance(serviceType, Store2())
+    
+    let typ = typeof<GrpcEndpointRouteBuilderExtensions>
+    typ.GetMethod("MapGrpcService", BindingFlags.Static ||| BindingFlags.Public)
+       .GetGenericMethodDefinition()
+       .MakeGenericMethod(serviceType)
+       .Invoke(null, [|builder|]) |> ignore
 
 type Saturn.Application.ApplicationBuilder with
 
     [<CustomOperation("use_grpc_2")>]
     ///Adds gRPC Code First endpoint. Passed parameter should be any constructor of the gRPC service implementation.
-    member __.UseGrpc<'a, 'b when 'a : not struct>(state, cons: 'b -> 'a) =
+    member __.UseGrpc<'a, 'b when 'a : not struct>(state, serviceType: Type) =
         let configureServices (services: IServiceCollection) =
-            //services.AddCodeFirstGrpc()
             services.AddGrpc() |> ignore
             services.AddGrpcReflection() |> ignore
+            services.AddSingleton<Store2>() |> ignore
             services
-            //services.AddSingleton(BinderConfiguration.Create([|ProtoBufMarshallerFactory.Default |], Binder2.ServiceBinderFrom(services))) |> ignore
-            //services.AddCodeFirstGrpcReflection()
             
 
         let configureApp (app: IApplicationBuilder) =
@@ -46,10 +45,8 @@ type Saturn.Application.ApplicationBuilder with
         let configureGrpcEndpoint (app: IApplicationBuilder) =
             app.UseEndpoints (fun endpoints -> 
               
-              endpoints.MapGrpcService<'a>() |> ignore
+              endpoints |> GrpcNonGeneric.MapGrpcService serviceType
               endpoints.MapGrpcReflectionService() |> ignore
-              //endpoints.MapCodeFirstGrpcReflectionService() |> ignore
-              
             )
             
 
