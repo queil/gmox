@@ -4,4 +4,4 @@
 
 # TODO
 
-* [_] Implement request matching (`Equals`, `Contains`, and `Matches`) and `/find` endpoint
+* [ ] Implement request matching (`Equals`, `Contains`, and `Matches`) and `/find` endpoint
