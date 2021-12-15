@@ -1,7 +1,7 @@
 namespace Queil.Gmox
 
-
 module Types =
+
   open System.Collections.Concurrent
   open Grpc.Core
   open System.Reflection
