@@ -8,6 +8,8 @@ module Types =
   open System
   open Google.Protobuf
   open System.Threading.Tasks
+  open Microsoft.AspNetCore.Routing
+  open Grpc.AspNetCore.Server
 
   module internal ConcurrentDict =
     open System.Collections.Generic
@@ -41,12 +43,25 @@ module Types =
   type Mapping = (Input * Msg) list
   type Methods = ConcurrentDictionary<string,Mapping>
   type Services = ConcurrentDictionary<string,Methods>
-
-
   type Serialize = obj -> string
 
-  type StubStore(serialize: Serialize) =
+  type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
     let stubs = Services()
+
+    let responseType (m:MethodInfo) =
+      let returnType = m.ReturnType
+      if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
+      then returnType.GenericTypeArguments.[0]
+      else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
+
+    let getGrpcMethod (s:Stub) =
+      let grpcMethod = 
+        endpoints.Endpoints
+        |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
+        |> Seq.filter (not << isNull)
+        |> Seq.find(fun x -> x.Method.FullName = $"/{s.Service}/{s.Method}")
+      grpcMethod.ServiceType.GetMethod(s.Method, BindingFlags.Public ||| BindingFlags.Instance)
+
 
     member _.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
       let chunks = context.Method.Split('/', StringSplitOptions.RemoveEmptyEntries)
@@ -56,13 +71,7 @@ module Types =
         | [| s; m |] -> (s, m)
         | _ -> failwithf "Could not parse method %s" (context.Method)
       
-      let returnType = (mb :?> MethodInfo).ReturnType
-      let responseType = 
-        if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
-        then returnType.GenericTypeArguments.[0]
-        else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
-      
-      let default' () = Activator.CreateInstance(responseType) :?> IMessage
+      let default' () = Activator.CreateInstance(responseType (mb :?> MethodInfo)) :?> IMessage
 
       let msg =
         match stubs.TryGetValue(service) with
@@ -81,8 +90,15 @@ module Types =
 
     member _.addOrReplace (s:Stub) =
       
+      let rsType = s |> (getGrpcMethod >> responseType)
+
+      let parser = typeof<JsonParser>.GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
+                    .GetGenericMethodDefinition()
+                    .MakeGenericMethod(rsType)
+      
       let msg = {
-        Data= JsonParser.Default.Parse<Grpc.Health.V1.HealthCheckResponse>(serialize s.Output.Data)
+        // this is awful - to be fixed (i.e. serialize to deserialize)
+        Data = parser.Invoke(JsonParser.Default, [|serialize s.Output.Data|]) :?> IMessage
         Error = s.Output.Error
       }
       let setAdd = stubs |> ConcurrentDict.addOrReplace s.Service
@@ -112,4 +128,4 @@ module Types =
     member _.clear () = stubs.Clear()
     
     member x.GetFindStubMethodName () = nameof(x.resolveResponse)
-    static member FindStubMethodName = StubStore(fun _ -> "").GetFindStubMethodName ()
+    static member FindStubMethodName = StubStore((fun _ -> ""), null).GetFindStubMethodName ()
