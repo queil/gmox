@@ -12,21 +12,7 @@ open Microsoft.AspNetCore.Server.Kestrel.Core
 open System.Text.Json
 open Google.Protobuf
 open System
-
-type Stub = {
-  Service: string
-  Method: string
-  Input: Input
-  Output: Output
-}
-and Input = 
-  | Equals of Map<string, obj>
-  | Contains of Map<string, obj>
-  | Matches of Map<string, obj>
-and Output = {
-  Data: Map<string, obj>
-  Error: string
-}
+open Microsoft.Extensions.Options
 
 module Route =
   let list = "/"
@@ -35,70 +21,11 @@ module Route =
   let clear = "/clear"
 
 
-type Mapping = (Input * Output) list
-type Methods = ConcurrentDictionary<string,Mapping>
-type Services = ConcurrentDictionary<string,Methods>
-
-module ConcurrentDict =
-  let addOrReplace  (key: 'a) (d:ConcurrentDictionary<'a,'b>) (addValue:'a -> 'b) (updateValue:'a -> 'b -> 'b) =
-    d.AddOrUpdate(key, addValue, updateValue) |> ignore
-    d
-  
-  let make (items: seq<'a * 'b>) = items |> Seq.map KeyValuePair |> ConcurrentDictionary<'a,'b>
 
 
 
-module Store =
 
 
-
-  let private stubs = Services()
-
-  let addOrReplace (s:Stub) =
-    //TODO: stub Output.Data should be validated on store
-    let setAdd = stubs |> ConcurrentDict.addOrReplace s.Service
-    let setReplace = setAdd <| fun _ -> seq { s.Method, [s.Input, s.Output] } |> ConcurrentDict.make
-    (setReplace <| fun _ methods ->
-      let setAdd = methods |> ConcurrentDict.addOrReplace s.Method
-      let setReplace = setAdd <| fun _ -> [s.Input, s.Output ]
-      setReplace <| fun _ _ -> [ s.Input, s.Output ])
-    |> ignore
-  
-  let list () = 
-    query {
-      for KeyValue(svc, methods) in stubs do
-      for KeyValue(method, mappings) in methods do
-      for (a, b) in mappings do
-      select {
-        Service = svc
-        Method = method
-        Input = a
-        Output = b
-      }
-    }
-
-  let findStub2 (svc:string) (method: string) (rs: Type) (rq: IMessage) =
-    Activator.CreateInstance(rs) :?> IMessage
-
-  let findStub<'a, 'b when 'a :> Google.Protobuf.IMessage and 'b :> Google.Protobuf.IMessage and 'b: (new:unit -> 'b) > (serializer:Json.ISerializer) (msg: 'a) (service: string) (method:string) : 'b =
-
-    let message = Google.Protobuf.JsonFormatter.Default.Format(msg)
-    let map = serializer.Deserialize<Map<string, obj>>(message)
-
-    match stubs.TryGetValue(service) with
-    | true, methods ->
-      match methods.TryGetValue(method) with
-      | true, mappings ->
-        mappings |> Seq.find(fun (i, o) ->
-          match i with
-          | Equals x -> true
-          | Contains x -> true
-          | Matches x -> true
-        ) |> fun (i,o) -> Google.Protobuf.JsonParser.Default.Parse<'b>(serializer.SerializeToString(o.Data))
-      | _ -> new 'b()
-    | _ -> new 'b()
-
-  let clear () = stubs.Clear()
 
 module Emit =
   open System
@@ -110,7 +37,7 @@ module Emit =
   open Grpc.Health.V1
   open System.Threading.Tasks
   open System.Linq.Expressions
-  let makeImpl (func: unit -> unit) (typ:Type) =
+  let makeImpl (typ:Type) =
 
     if not <| typ.IsAbstract then
       failwithf "Expecting a service base type which should be abstract. Given type: '%s'" (typ.AssemblyQualifiedName)
@@ -140,15 +67,20 @@ module Emit =
           method.ReturnType,
           method.GetParameters() |> Array.map (fun p -> p.ParameterType))
 
-      let mi = storeFld.FieldType.GetMethod("findStub2")
+      let mi = storeFld.FieldType.GetMethod("findStub3")
 
       let il = methodBuilder.GetILGenerator()
        
-      il.Emit(OpCodes.Ldarg_0)
-      il.Emit(OpCodes.Ldfld, storeFld)
-      il.Emit(OpCodes.Newobj, typeof<obj>.GetConstructor(Type.EmptyTypes))
-      il.Emit(OpCodes.Callvirt, mi)
-      il.Emit(OpCodes.Ret)
+      il.Emit(OpCodes.Ldarg_0)         // push Grpc svc on to the stack (this)
+      il.Emit(OpCodes.Ldfld, storeFld) // push Store instance reference on to the stack
+      il.Emit(OpCodes.Ldarg_1)         // grpc method request reference
+      il.Emit(OpCodes.Ldarg_2)         // grpc method server call context
+      
+      let getCurrentMethod = typeof<MethodBase>.GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public ||| BindingFlags.Static)
+      il.Emit(OpCodes.Call, getCurrentMethod)
+
+      il.Emit(OpCodes.Callvirt, mi)    // now call findStubs
+      il.Emit(OpCodes.Ret)             // return the retrieved response
 
 
       typeBuilder.DefineMethodOverride(methodBuilder, method)
@@ -160,21 +92,25 @@ module Emit =
 
 let stubControl =
   router {
-      get Route.clear (fun next ctx -> 
-        Store.clear()
-        Successful.NO_CONTENT next ctx
+      get Route.clear (fun next ctx ->
+         task {
+           ctx.GetService<Store2>().clear()
+           return! Successful.NO_CONTENT next ctx
+         })
+      get Route.list (fun next ctx -> 
+          task {
+          return! ctx.WriteJsonChunkedAsync(ctx.GetService<Store2>().list())
+        }
       )
-      get Route.list (json (Store.list ()))
-      post Route.add (bindJson<Stub> (fun s -> 
-        s |> Store.addOrReplace
-        Successful.NO_CONTENT
-      ))
+      post Route.add (fun next ctx ->
+         task {
+          let! stub = ctx.BindJsonAsync<Stub>()
+          stub |> ctx.GetService<Store2>().addOrReplace
+          return! Successful.NO_CONTENT next ctx
+         }
+      )
     }
 
-
-let callMe () =
-  printfn "%s" "I was called"
-  ()
 
 let app =
   application {
@@ -182,12 +118,15 @@ let app =
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
-    use_grpc_2 (typeof<Grpc.Health.V1.Health.HealthBase> |> Emit.makeImpl callMe )
+    use_grpc_2 (typeof<Grpc.Health.V1.Health.HealthBase> |> Emit.makeImpl)
     use_router stubControl
-    service_config (fun svcs -> 
+    service_config (fun svcs ->
        let options = SystemTextJson.Serializer.DefaultOptions
        options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
        options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
+       //options.Converters.Add(Json2.StubConverter<Grpc.Health.V1.Health.HealthBase>())
+       options.Converters.Add(Json2.ProtoMessageConverterFactory())
+       
        svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options))
     )
   }
