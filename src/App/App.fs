@@ -55,14 +55,9 @@ let app =
        options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
        options.Converters.Add(ProtoMessageConverterFactory())
        svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
-       svcs.AddSingleton<ISerializeX>(fun (f:IServiceProvider) ->
-          let coreSerializer = f.GetRequiredService<Json.ISerializer>()
-          {
-            new ISerializeX with
-              member _.Serialize data = coreSerializer.SerializeToString(data)
-          }
-        )
+       svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
     )
+    
   }
 
 run app

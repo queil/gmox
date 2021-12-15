@@ -43,13 +43,12 @@ module Types =
   type Services = ConcurrentDictionary<string,Methods>
 
 
-  type ISerializeX =
-    abstract member Serialize : obj -> string
+  type Serialize = obj -> string
 
-  type StubStore(serialize: ISerializeX) =
+  type StubStore(serialize: Serialize) =
     let stubs = Services()
 
-    member _.findStub3 (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
+    member _.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
       let chunks = context.Method.Split('/', StringSplitOptions.RemoveEmptyEntries)
       
       let (service, method) =
@@ -83,7 +82,7 @@ module Types =
     member _.addOrReplace (s:Stub) =
       
       let msg = {
-        Data= JsonParser.Default.Parse<Grpc.Health.V1.HealthCheckResponse>(serialize.Serialize s.Output.Data)
+        Data= JsonParser.Default.Parse<Grpc.Health.V1.HealthCheckResponse>(serialize s.Output.Data)
         Error = s.Output.Error
       }
       let setAdd = stubs |> ConcurrentDict.addOrReplace s.Service
@@ -112,5 +111,5 @@ module Types =
       
     member _.clear () = stubs.Clear()
     
-    member x.GetFindStubMethodName () = nameof(x.findStub3)
-    static member FindStubMethodName = StubStore({new ISerializeX with member x.Serialize _ = ""}).GetFindStubMethodName ()
+    member x.GetFindStubMethodName () = nameof(x.resolveResponse)
+    static member FindStubMethodName = StubStore(fun _ -> "").GetFindStubMethodName ()
