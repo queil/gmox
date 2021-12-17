@@ -53,8 +53,8 @@ The first match wins.
 * [ ] Handle errors:
   * [ ] `/add` - if input JSON is not a valid request for the specified service method
 * [ ] Support the following source of service schemas for static stubbing:
-  1. [ ] NuGet package (compile-time - as a dotnet project template)
-  2. [ ] Protos (runtime)
-  3. [ ] NuGet (runtime)
+  1. [ ] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
+  2. [ ] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)
+  3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
 * [ ] Support recording received calls and expose as via the control API
 * [ ] Add examples for API endpoints
