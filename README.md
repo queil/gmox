@@ -21,6 +21,7 @@ Requests are matched to the stubs in the following order (if multiple stubs for 
 
 ## TODO
 
+* [ ] Unit tests!
 * [x] Support dynamic stubbing:
   * [x] `exact`
   * [ ] `partial`
