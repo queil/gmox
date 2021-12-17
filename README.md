@@ -1,6 +1,6 @@
 # Gmox
 
-.NET-friendly gRpc mocks server inspired by [gripmock](https://github.com/tokopedia/gripmock) powered by [Saturn](https://saturnframework.org/) and F#.
+.NET-friendly gRPC mocks server inspired by [gripmock](https://github.com/tokopedia/gripmock) powered by [Saturn](https://saturnframework.org/) and F#.
 
 ## TODO
 
