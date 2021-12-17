@@ -42,9 +42,9 @@
       },
       "Queil.Gmox.Core": {
         "type": "Direct",
-        "requested": "[0.1.0-alpha.1, )",
-        "resolved": "0.1.0-alpha.1",
-        "contentHash": "IMLMbe5xJT0d2cREJSxK3eiU/ebBXdipfO5Acey5Xyo5/W8Nhhs0eJKvxSTSki7gbkTKdcsYYkRQAmRbPZowUA==",
+        "requested": "[0.1.0-alpha.*, )",
+        "resolved": "0.1.0-alpha.2",
+        "contentHash": "xpzTY5uGbTlmexSuY2EGc+Tn7vKxH/Q6FZlOPJmIo9ojtBo9cqCPZy3iVsyyw8k96lIOTeDzhlcFxHqkqOki3Q==",
         "dependencies": {
           "FSharp.Core": "6.0.1",
           "Google.Protobuf": "3.19.1",
