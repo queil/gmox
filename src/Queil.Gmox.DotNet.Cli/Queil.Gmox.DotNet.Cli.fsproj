@@ -7,6 +7,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>gmox</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageTags>gmox</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
