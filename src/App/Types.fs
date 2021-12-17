@@ -2,7 +2,6 @@ namespace Queil.Gmox
 
 module Types =
 
-  open System.Collections.Concurrent
   open Grpc.Core
   open System.Reflection
   open System
@@ -10,43 +9,69 @@ module Types =
   open System.Threading.Tasks
   open Microsoft.AspNetCore.Routing
   open Grpc.AspNetCore.Server
+  open System.Collections.Generic
+  open System.Text.Json.JsonDiffPatch
+  open System.Text.Json.Nodes
 
-  module internal ConcurrentDict =
-    open System.Collections.Generic
-
-    let addOrReplace  (key: 'a) (d:ConcurrentDictionary<'a,'b>) (addValue:'a -> 'b) (updateValue:'a -> 'b -> 'b) =
-      d.AddOrUpdate(key, addValue, updateValue) |> ignore
-      d
-
-    let make (items: seq<'a * 'b>) = items |> Seq.map KeyValuePair |> ConcurrentDictionary<'a,'b>
-
+  [<CustomEquality>][<NoComparison>]
   type Stub = {
-    Service: string
     Method: string
-    Input: Input
+    Expect: Expect
     Output: Output
   }
-  and Input =
-    | Equals of Map<string, obj>
-    | Contains of Map<string, obj>
-    | Matches of Map<string, obj>
-  and Output = {
-    Data: obj
-    Error: string
+  with
+    interface IEquatable<Stub> with
+      member this.Equals other =
+        this.Method = other.Method &&
+        JsonDiffPatcher.DeepEquals(this.Expect.Matcher, other.Expect.Matcher) 
+    override this.Equals other =
+      match other with
+      | :? Stub as s -> (this :> IEquatable<_>).Equals s
+      | _ -> false
+    override this.GetHashCode () =
+      this.Method.GetHashCode()
+
+  and Expect =
+   | Exact of JsonNode
+   | Partial of JsonNode
+   | Matches of JsonNode
+   member x.Matcher : JsonNode =
+     match x with
+     | Exact m -> m
+     | Partial m -> m
+     | Matches m -> m
+
+  and Output() =
+    member val Data = obj() with get, set
+    member val Error = "" with get, set
+    member val internal Msg = (WellKnownTypes.Empty() :> IMessage) with get, set
+
+  type Stubs = HashSet<Stub>
+  
+  type TestData = {
+    Method: string
+    Data: JsonNode
   }
 
-  type Msg = {
-    Data: IMessage
-    Error: string
-  }
 
-  type Mapping = (Input * Msg) list
-  type Methods = ConcurrentDictionary<string,Mapping>
-  type Services = ConcurrentDictionary<string,Methods>
   type Serialize = obj -> string
+  
+  
+
+  let (|JArr|JObj|JVal|) (n:JsonNode) =
+    match n with
+    | :? JsonArray as x -> JArr(x)
+    | :? JsonValue as x -> JVal(x)
+    | :? JsonObject as x-> JObj(x)
+    | _ -> failwithf "JsonNode '%s' is not supported" (n.ToJsonString())
+  
+  type Mode = Exact | Partial | Matches 
+
+
+
 
   type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
-    let stubs = Services()
+    let stubs = Stubs()
 
     let responseType (m:MethodInfo) =
       let returnType = m.ReturnType
@@ -59,33 +84,15 @@ module Types =
         endpoints.Endpoints
         |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
         |> Seq.filter (not << isNull)
-        |> Seq.find(fun x -> x.Method.FullName = $"/{s.Service}/{s.Method}")
-      grpcMethod.ServiceType.GetMethod(s.Method, BindingFlags.Public ||| BindingFlags.Instance)
+        |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
+      grpcMethod.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
 
     member _.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
-      let chunks = context.Method.Split('/', StringSplitOptions.RemoveEmptyEntries)
-
-      let (service, method) =
-        match chunks with
-        | [| s; m |] -> (s, m)
-        | _ -> failwithf "Could not parse method %s" (context.Method)
 
       let default' () = Activator.CreateInstance(responseType (mb :?> MethodInfo)) :?> IMessage
-
-      let msg =
-        match stubs.TryGetValue(service) with
-        | true, methods ->
-          match methods.TryGetValue(method) with
-          | true, mappings ->
-            mappings |> Seq.find(fun (i, o) ->
-              match i with
-              | Equals x -> true
-              | Contains x -> true
-              | Matches x -> true
-            ) |> fun (i,o) -> o.Data
-          | _ -> default' ()
-        | _ -> default' ()
-      Task.FromResult(msg)
+      
+      let method = context.Method.[1..]
+      Task.FromResult(default' ())
 
     member _.addOrReplace (s:Stub) =
 
@@ -95,36 +102,61 @@ module Types =
                     .GetGenericMethodDefinition()
                     .MakeGenericMethod(rsType)
 
-      let msg = {
-        // this is awful - to be fixed (i.e. serialize to deserialize)
-        Data = parser.Invoke(JsonParser.Default, [|serialize s.Output.Data|]) :?> IMessage
-        Error = s.Output.Error
-      }
-      let setAdd = stubs |> ConcurrentDict.addOrReplace s.Service
-      let setReplace = setAdd <| fun _ -> seq { s.Method, [s.Input, msg] } |> ConcurrentDict.make
-      (setReplace <| fun _ methods ->
-        let setAdd = methods |> ConcurrentDict.addOrReplace s.Method
-        let setReplace = setAdd <| fun _ -> [s.Input, msg ]
-        setReplace <| fun _ _ -> [ s.Input, msg ])
-      |> ignore
+      s.Output.Msg <- parser.Invoke(JsonParser.Default, [|serialize s.Output.Data|]) :?> IMessage
+      
+      stubs.Add s |> ignore
 
-    member _.list () =
-      query {
-        for KeyValue(svc, methods) in stubs do
-        for KeyValue(method, mappings) in methods do
-        for (a, b) in mappings do
-        select {
-          Service = svc
-          Method = method
-          Input = a
-          Output = {
-            Data = b.Data
-            Error = b.Error
-          }
-        }
-      }
-
+    member _.list () = stubs |> List.ofSeq
     member _.clear () = stubs.Clear()
+    member _.test (test:TestData) =
+      
+      let isMatch (expected:Expect) (actual:JsonNode) : bool =
+        let mode, exp =
+          match expected with
+          | Expect.Exact n -> Exact, n
+          | Expect.Partial n -> Partial, n
+          | Expect.Matches n -> Matches, n
 
-    member x.GetFindStubMethodName () = nameof(x.resolveResponse)
-    static member FindStubMethodName = StubStore((fun _ -> ""), null).GetFindStubMethodName ()
+        let rec next (xp:JsonNode) (ac:JsonNode) =
+          match mode, xp, ac with
+          | Exact, JArr a, JArr b when a.Count = b.Count ->
+            query {
+              for va in a do
+              join vb in b
+                on (va = vb)
+              all (next va vb)
+            }
+          | Exact, JObj a, JObj b when a.Count = b.Count ->
+            query {
+              for KeyValue(ka, va) in a do
+              join bkv in b
+                on (ka = bkv.Key)
+              all (next va bkv.Value)
+            }
+          | Exact, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
+          | Partial, JArr a, JArr b when a.Count <= b.Count ->
+            query {
+              for vb in b do
+              leftOuterJoin va in a
+                on (vb = va) into result
+              for x in result do
+              all (next x vb)
+            }
+          | Partial, JObj a, JObj b when a.Count <= b.Count ->
+            // query {
+            //   for KeyValue(kb, vb) in b do
+            //   leftOuterJoin akv in a
+            //     on (kb = akv.Key) into result
+            //   for x in result do
+            //   all (next x.Value vb)
+            // }
+            query {
+              for KeyValue(ka, va) in a do
+              join bkv in b
+                on (ka = bkv.Key)
+              all (next va bkv.Value)
+            }
+          | Partial, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
+          | _ -> false
+        next exp actual
+      stubs |> Seq.find (fun x -> x.Method = test.Method && isMatch x.Expect test.Data)

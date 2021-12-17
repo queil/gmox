@@ -17,5 +17,6 @@
     <PackageReference Include="Saturn" Version="0.15.0" />
     <PackageReference Include="Saturn.Extensions.gRPC" Version="0.15.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="SystemTextJson.JsonDiffPatch" Version="1.0.0-preview.2" />
   </ItemGroup>
 </Project>

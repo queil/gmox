@@ -36,7 +36,7 @@ module Emit =
           method.ReturnType,
           method.GetParameters() |> Array.map (fun p -> p.ParameterType))
 
-      let findStub = storeFld.FieldType.GetMethod(StubStore.FindStubMethodName)
+      let findStub = storeFld.FieldType.GetMethod(nameof Unchecked.defaultof<StubStore>.resolveResponse)
       let getCurrentMethod = typeof<MethodBase>.GetMethod(nameof(MethodBase.GetCurrentMethod), BindingFlags.Public ||| BindingFlags.Static)
 
       let il = methodBuilder.GetILGenerator()

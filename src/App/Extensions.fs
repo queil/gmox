@@ -3,7 +3,6 @@ namespace Queil.Gmox
 module Extensions =
 
   open System
-  open Types
 
   module Json =
 
@@ -45,6 +44,7 @@ module Extensions =
     open Saturn
     open Microsoft.Extensions.DependencyInjection
     open Microsoft.AspNetCore.Builder
+    open Types
 
     type Application.ApplicationBuilder with
 
@@ -62,7 +62,7 @@ module Extensions =
             let configureGrpcEndpoint (app: IApplicationBuilder) =
                 app.UseEndpoints (fun endpoints ->
                   for t in types do
-                    endpoints |> Grpc.MapGrpcService (t |> Queil.Gmox.Emit.makeImpl)
+                    endpoints |> Grpc.MapGrpcService (t |> Emit.makeImpl)
                   endpoints.MapGrpcReflectionService() |> ignore
                 )
 

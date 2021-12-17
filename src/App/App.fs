@@ -16,24 +16,28 @@ let router =
   router {
 
       get "/" (fun next ctx ->
-          task {
+        task {
           return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().list())
-        }
-      )
+        })
 
-      get "/clear" (fun next ctx ->
-         task {
-           ctx.GetService<StubStore>().clear()
-           return! Successful.NO_CONTENT next ctx
-         })
+      post "/test" (fun next ctx -> 
+        task {
+          let! test = ctx.BindJsonAsync<TestData>()
+          return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().test test)
+        })
+
+      post "/clear" (fun next ctx ->
+        task {
+          ctx.GetService<StubStore>().clear()
+          return! Successful.NO_CONTENT next ctx
+        })
 
       post "/add" (fun next ctx ->
-         task {
+        task {
           let! stub = ctx.BindJsonAsync<Stub>()
           stub |> ctx.GetService<StubStore>().addOrReplace
           return! Successful.NO_CONTENT next ctx
-         }
-      )
+        })
     }
 
 let app =
@@ -47,12 +51,12 @@ let app =
     ]
     use_router router
     service_config (fun svcs ->
-       let options = SystemTextJson.Serializer.DefaultOptions
-       options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
-       options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
-       options.Converters.Add(ProtoMessageConverterFactory())
-       svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
-       svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
+      let options = SystemTextJson.Serializer.DefaultOptions
+      options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
+      options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
+      options.Converters.Add(ProtoMessageConverterFactory())
+      svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
+      svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
     )
   }
 
