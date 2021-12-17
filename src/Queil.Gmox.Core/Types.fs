@@ -53,11 +53,8 @@ module Types =
     Data: JsonNode
   }
 
-
   type Serialize = obj -> string
   
-  
-
   let (|JArr|JObj|JVal|) (n:JsonNode) =
     match n with
     | :? JsonArray as x -> JArr(x)
@@ -66,9 +63,6 @@ module Types =
     | _ -> failwithf "JsonNode '%s' is not supported" (n.ToJsonString())
   
   type Mode = Exact | Partial | Matches 
-
-
-
 
   type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
     let stubs = Stubs()

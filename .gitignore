@@ -15,4 +15,4 @@ release.sh
 *.orig
 *.DotSettings.user
 *.fs.js
-
+**/nupkg/

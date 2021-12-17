@@ -43,6 +43,23 @@ Whenever a gRPC call is received the request data is evaluated against the avail
 Multiple stubs can be configured for a gRPC method and they're evaluated from the most (`exact`) to the least (`regexp`) specific.
 The first match wins. 
 
+## Usage/deployment modes
+
+:information_source: All of the below modes support both static and dynamic stubbing.
+
+### Dotnet CLI tool
+
+Gmox as a dotnet CLI tool is useful in development scenarios when you want to quickly create a mock
+server from protos.
+
+### Dotnet Template
+
+Gmox as a dotnet template is useful when you want to create a mock server for a particular service, equip it with a curated set of default rules, and/or it runs in an environment where you have no access to protos.
+
+### Docker image
+
+Both the CLI tool and a server generated from the template may be packaged as Docker image and used in scenarios where having .NET SDK is not desirable.
+
 ## TODO
 
 * [ ] Unit tests!
@@ -58,3 +75,10 @@ The first match wins.
   3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
 * [ ] Support recording received calls and expose as via the control API
 * [ ] Add examples for API endpoints
+
+
+## Development
+
+```bash
+dotnet new --install $(pwd)/src/Queil.Gmox.Template
+```
