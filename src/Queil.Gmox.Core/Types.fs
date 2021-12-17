@@ -7,8 +7,6 @@ module Types =
   open System
   open Google.Protobuf
   open System.Threading.Tasks
-  open Microsoft.AspNetCore.Routing
-  open Grpc.AspNetCore.Server
   open System.Collections.Generic
   open System.Text.Json.JsonDiffPatch
   open System.Text.Json.Nodes
@@ -54,6 +52,7 @@ module Types =
   }
 
   type Serialize = obj -> string
+  type GetGrpcMethod = Stub -> MethodInfo
   
   let (|JArr|JObj|JVal|) (n:JsonNode) =
     match n with
@@ -64,7 +63,7 @@ module Types =
   
   type Mode = Exact | Partial | Matches 
 
-  type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
+  type StubStore(serialize: Serialize, getGrpcMethod: GetGrpcMethod) =
     let stubs = Stubs()
 
     let getResponseType (m:MethodInfo) =
@@ -72,14 +71,6 @@ module Types =
       if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
       then returnType.GenericTypeArguments.[0]
       else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
-
-    let getGrpcMethod (s:Stub) =
-      let grpcMethod =
-        endpoints.Endpoints
-        |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
-        |> Seq.filter (not << isNull)
-        |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
-      grpcMethod.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
     
     let parserFor (typ:Type) =
       let parser =
