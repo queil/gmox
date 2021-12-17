@@ -10,7 +10,7 @@ variables:
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
     PKGVER: ${{ variables['Build.SourceBranchName'] }}
   ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/tags/')) }}:
-    PKGVER: '1.999.999-dev'
+    PKGVER: '0.0.0-dev'
   BuildConfiguration: Release
 
 pool:
