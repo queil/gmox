@@ -16,7 +16,7 @@ module Types =
   [<CustomEquality>][<NoComparison>]
   type Stub = {
     Method: string
-    Expect: Expect
+    Expect: Rule
     Output: Output
   }
   with
@@ -31,7 +31,7 @@ module Types =
     override this.GetHashCode () =
       this.Method.GetHashCode()
 
-  and Expect =
+  and Rule =
    | Exact of JsonNode
    | Partial of JsonNode
    | Matches of JsonNode
@@ -73,7 +73,7 @@ module Types =
   type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
     let stubs = Stubs()
 
-    let responseType (m:MethodInfo) =
+    let getResponseType (m:MethodInfo) =
       let returnType = m.ReturnType
       if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
       then returnType.GenericTypeArguments.[0]
@@ -86,36 +86,45 @@ module Types =
         |> Seq.filter (not << isNull)
         |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
       grpcMethod.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
-
-    member _.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
-
-      let default' () = Activator.CreateInstance(responseType (mb :?> MethodInfo)) :?> IMessage
+    
+    let parserFor (typ:Type) =
+      let parser =
+        typeof<JsonParser>
+          .GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
+          .GetGenericMethodDefinition()
+          .MakeGenericMethod(typ)
       
+      fun (data:string) -> parser.Invoke(JsonParser.Default, [|data|]) :?> IMessage
+
+    member x.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
       let method = context.Method.[1..]
-      Task.FromResult(default' ())
+      let maybeStub = x.findBestMatchFor {Method = method; Data = JsonNode.Parse(JsonFormatter.Default.Format(request)) }
+      
+      let response =
+        match maybeStub with
+        | None -> 
+          let default' () = Activator.CreateInstance(getResponseType (mb :?> MethodInfo)) :?> IMessage
+          default' ()
+        | Some s -> s.Output.Msg
+
+      Task.FromResult(response)
 
     member _.addOrReplace (s:Stub) =
-
-      let rsType = s |> (getGrpcMethod >> responseType)
-
-      let parser = typeof<JsonParser>.GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
-                    .GetGenericMethodDefinition()
-                    .MakeGenericMethod(rsType)
-
-      s.Output.Msg <- parser.Invoke(JsonParser.Default, [|serialize s.Output.Data|]) :?> IMessage
-      
+      let responseType = s |> (getGrpcMethod >> getResponseType)
+      let parse = parserFor responseType
+      s.Output.Msg <- s.Output.Data |> serialize |> parse
       stubs.Add s |> ignore
 
     member _.list () = stubs |> List.ofSeq
     member _.clear () = stubs.Clear()
-    member _.test (test:TestData) =
+    member _.findBestMatchFor (test:TestData) : Stub option =
       
-      let isMatch (expected:Expect) (actual:JsonNode) : bool =
+      let isMatch (expected:Rule) (actual:JsonNode) : bool =
         let mode, exp =
           match expected with
-          | Expect.Exact n -> Exact, n
-          | Expect.Partial n -> Partial, n
-          | Expect.Matches n -> Matches, n
+          | Rule.Exact n -> Exact, n
+          | Rule.Partial n -> Partial, n
+          | Rule.Matches n -> Matches, n
 
         let rec next (xp:JsonNode) (ac:JsonNode) =
           match mode, xp, ac with
@@ -136,20 +145,12 @@ module Types =
           | Exact, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
           | Partial, JArr a, JArr b when a.Count <= b.Count ->
             query {
-              for vb in b do
-              leftOuterJoin va in a
-                on (vb = va) into result
-              for x in result do
-              all (next x vb)
+              for va in a do
+              join vb in b
+                on (va = vb)
+              all (next va vb)
             }
           | Partial, JObj a, JObj b when a.Count <= b.Count ->
-            // query {
-            //   for KeyValue(kb, vb) in b do
-            //   leftOuterJoin akv in a
-            //     on (kb = akv.Key) into result
-            //   for x in result do
-            //   all (next x.Value vb)
-            // }
             query {
               for KeyValue(ka, va) in a do
               join bkv in b
@@ -159,4 +160,4 @@ module Types =
           | Partial, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
           | _ -> false
         next exp actual
-      stubs |> Seq.find (fun x -> x.Method = test.Method && isMatch x.Expect test.Data)
+      stubs |> Seq.tryFind (fun x -> x.Method = test.Method && isMatch x.Expect test.Data)

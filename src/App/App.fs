@@ -23,7 +23,7 @@ let router =
       post "/test" (fun next ctx -> 
         task {
           let! test = ctx.BindJsonAsync<TestData>()
-          return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().test test)
+          return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().findBestMatchFor test)
         })
 
       post "/clear" (fun next ctx ->

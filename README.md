@@ -11,13 +11,37 @@ Gmox exposes two endpoints:
   * `POST` `/test` - test if the provided data matches any stub
   * `POST` `/clear` - deletes all the stub configurations
 
-## Stubbing configuration rules
+## Stubbing configuration
 
-Requests are matched to the stubs in the following order (if multiple stubs for a method are configured):
+Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`), a rule that matches incoming requests data, and a corresponding response data attached to it.
+
+### Example
+
+Given the server receives a call to the `grpc.health.v1.Health/Check` method and the message is `{}` (empty) then it return `{"status": "SERVING"}`.
+
+```json
+{
+  "method": "grpc.health.v1.Health/Check",
+  "expect": {
+    "exact": {}
+  }, 
+  "output": {
+    "data": {
+      "status": "SERVING"
+    }
+  }
+}
+```
+
+Stubs can be configured using the following rules:
 
 * `exact` - matches if the request is exactly the same as the stub input
 * `partial` - matches if the stub input data is a sub-tree of the request data
 * `regexp` - like `partial` but values in requests can be matched with a regular expression
+
+Whenever a gRPC call is received the request data is evaluated against the available stub configurations.
+Multiple stubs can be configured for a gRPC method and they're evaluated from the most (`exact`) to the least (`regexp`) specific.
+The first match wins. 
 
 ## TODO
 
