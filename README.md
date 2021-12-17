@@ -93,7 +93,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 ### Testing `Queil.Gmox.Template`
 
 ```bash
-cd ./src/Queil.Gmox.Template
+cd ./src/Queil.Gmox.Template/template
 dotnet new --uninstall $(pwd) && dotnet new --install $(pwd)
 # then in another dir
 dotnet new gmox -nu Your.NuGet.Package -as Your.NuGet.Package.Assembly.Type
