@@ -16,16 +16,7 @@
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Queil.Gmox.Template.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
-    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.41.0" />
-    <PackageReference Include="Grpc.HealthCheck" Version="2.42.0" />
-    <PackageReference Include="Saturn" Version="0.15.0" />
-    <PackageReference Include="Saturn.Extensions.gRPC" Version="0.15.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="../Queil.Gmox.Core/Queil.Gmox.Core.fsproj" />
+    <Content Include="template\**\*" />
+    <Compile Remove="**\*" />
   </ItemGroup>
 </Project>

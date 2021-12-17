@@ -56,6 +56,15 @@ server from protos.
 
 Gmox as a dotnet template is useful when you want to create a mock server for a particular service, equip it with a curated set of default rules, and/or it runs in an environment where you have no access to protos.
 
+The template makes following assumptions out-of-the-box:
+
+* references the NuGet package provided as a parameter
+* auto-registers all the services from the assembly marked with a type (fully-qualified) passed as a parameter
+
+Installation: `dotnet new --install Queil.Gmox.Template`
+
+Usage: `dotnet new gmox -h`
+
 ### Docker image
 
 Both the CLI tool and a server generated from the template may be packaged as Docker image and used in scenarios where having .NET SDK is not desirable.
@@ -63,6 +72,8 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 ## TODO
 
 * [ ] Unit tests!
+* [ ] Docs!
+  * [ ] Add examples for API endpoints
 * [x] Support dynamic stubbing:
   * [x] `exact`
   * [ ] `partial`
@@ -70,15 +81,20 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 * [ ] Handle errors:
   * [ ] `/add` - if input JSON is not a valid request for the specified service method
 * [ ] Support the following source of service schemas for static stubbing:
-  1. [ ] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
+  1. [x] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
   2. [ ] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)
   3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
 * [ ] Support recording received calls and expose as via the control API
-* [ ] Add examples for API endpoints
+* [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
 
 
 ## Development
 
+### Testing `Queil.Gmox.Template`
+
 ```bash
-dotnet new --install $(pwd)/src/Queil.Gmox.Template
+cd ./src/Queil.Gmox.Template
+dotnet new --uninstall $(pwd) && dotnet new --install $(pwd)
+# then in another dir
+dotnet new gmox -nu Your.NuGet.Package -as Your.NuGet.Package.Assembly.Type
 ```

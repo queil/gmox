@@ -3,8 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>botsay</ToolCommandName>
+    <ToolCommandName>gmox</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
