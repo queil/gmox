@@ -9,6 +9,7 @@ trigger:
 variables:
   pkgver: ${{ variables['Build.SourceBranchName'] }}
   BuildConfiguration: Release
+  VERSION: null
 
 pool:
   vmImage: 'ubuntu-latest'
