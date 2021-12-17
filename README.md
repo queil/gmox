@@ -17,7 +17,7 @@ Stub configuration consists of a fully-qualified method name (like `grpc.health.
 
 ### Example
 
-Given the server receives a call to the `grpc.health.v1.Health/Check` method and the message is `{}` (empty) then it return `{"status": "SERVING"}`.
+Given the server receives a call to the `grpc.health.v1.Health/Check` method and the message is `{}` (empty) then it returns `{"status": "SERVING"}`.
 
 ```json
 {
