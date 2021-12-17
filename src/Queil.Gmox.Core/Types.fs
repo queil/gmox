@@ -16,14 +16,14 @@ module Types =
   [<CustomEquality>][<NoComparison>]
   type Stub = {
     Method: string
-    Expect: Rule
-    Output: Output
+    Match: Rule
+    Return: Output
   }
   with
     interface IEquatable<Stub> with
       member this.Equals other =
         this.Method = other.Method &&
-        JsonDiffPatcher.DeepEquals(this.Expect.Matcher, other.Expect.Matcher) 
+        JsonDiffPatcher.DeepEquals(this.Match.Matcher, other.Match.Matcher) 
     override this.Equals other =
       match other with
       | :? Stub as s -> (this :> IEquatable<_>).Equals s
@@ -99,14 +99,14 @@ module Types =
         | None -> 
           let default' () = Activator.CreateInstance(getResponseType (mb :?> MethodInfo)) :?> IMessage
           default' ()
-        | Some s -> s.Output.Msg
+        | Some s -> s.Return.Msg
 
       Task.FromResult(response)
 
     member _.addOrReplace (s:Stub) =
       let responseType = s |> (getGrpcMethod >> getResponseType)
       let parse = parserFor responseType
-      s.Output.Msg <- s.Output.Data |> serialize |> parse
+      s.Return.Msg <- s.Return.Data |> serialize |> parse
       stubs.Add s |> ignore
 
     member _.list () = stubs |> List.ofSeq
@@ -154,4 +154,4 @@ module Types =
           | Partial, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
           | _ -> false
         next exp actual
-      stubs |> Seq.tryFind (fun x -> x.Method = test.Method && isMatch x.Expect test.Data)
+      stubs |> Seq.tryFind (fun x -> x.Method = test.Method && isMatch x.Match test.Data)

@@ -22,10 +22,10 @@ Given the server receives a call to the `grpc.health.v1.Health/Check` method and
 ```json
 {
   "method": "grpc.health.v1.Health/Check",
-  "expect": {
+  "match": {
     "exact": {}
   }, 
-  "output": {
+  "return": {
     "data": {
       "status": "SERVING"
     }
