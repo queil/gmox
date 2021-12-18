@@ -6,8 +6,6 @@
     <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>gmox</ToolCommandName>
-    <PackageOutputPath>./nupkg</PackageOutputPath>
-    <PackageTags>gmox</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/Queil.Gmox.Template/bin/Debug/net6.0/Queil.Gmox.Template.dll",
+      "program": "${workspaceFolder}/src/Queil.Gmox.Template/template/bin/Debug/net6.0/Queil.Gmox.Template.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",

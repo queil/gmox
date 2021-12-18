@@ -1,15 +1,15 @@
-namespace Queil.Gmox
+namespace Queil.Gmox.Core
+
+open Google.Protobuf
+open Grpc.Core
+open System
+open System.Collections.Generic
+open System.Reflection
+open System.Text.Json.JsonDiffPatch
+open System.Text.Json.Nodes
+open System.Threading.Tasks
 
 module Types =
-
-  open Grpc.Core
-  open System.Reflection
-  open System
-  open Google.Protobuf
-  open System.Threading.Tasks
-  open System.Collections.Generic
-  open System.Text.Json.JsonDiffPatch
-  open System.Text.Json.Nodes
 
   [<CustomEquality>][<NoComparison>]
   type Stub = {

@@ -1,20 +1,19 @@
 module Queil.Gmox.App
 
-open Grpc.Core
 open Giraffe
-open Saturn
-open Microsoft.Extensions.DependencyInjection
-open System.Text.Json.Serialization
-open System.Runtime.Serialization
-open Microsoft.AspNetCore.Server.Kestrel.Core
-open System.Text.Json
+open Grpc.AspNetCore.Server
+open Queil.Gmox.Infra.Json
+open Queil.Gmox.Infra.Saturn
 open Queil.Gmox.Types
-open Queil.Gmox.Extensions.Saturn
-open Queil.Gmox.Extensions.Json
+open Microsoft.AspNetCore.Routing
+open Microsoft.AspNetCore.Server.Kestrel.Core
+open Microsoft.Extensions.DependencyInjection
+open Saturn
 open System
 open System.Reflection
-open Microsoft.AspNetCore.Routing
-open Grpc.AspNetCore.Server
+open System.Text.Json
+open System.Text.Json.Serialization
+open System.Runtime.Serialization
 
 let router =
   router {
@@ -51,7 +50,9 @@ let app =
     memory_cache
     use_gzip
     use_dynamic_grpc [
-      yield! Extensions.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health>
+      yield! (
+        Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
+      )
     ]
     use_router router
     service_config (fun svcs ->
@@ -70,7 +71,8 @@ let app =
             |> Seq.filter (not << isNull)
             |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
           method.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
-      ))
+      )) |> ignore
+      svcs.AddSingleton<StubStore>()
     )
   }
 
