@@ -29,6 +29,7 @@ module Extensions =
     open System.Reflection
     open Microsoft.AspNetCore.Builder
     open Microsoft.AspNetCore.Routing
+    open Grpc.Core
 
     let MapGrpcService (serviceType: Type) (builder: IEndpointRouteBuilder)  =
 
@@ -37,6 +38,16 @@ module Extensions =
         .GetGenericMethodDefinition()
         .MakeGenericMethod(serviceType)
         .Invoke(null, [|builder|]) |> ignore
+
+    let servicesFromAssemblyOf<'a> =
+      query {
+        for t in (typeof<'a>).Assembly.DefinedTypes do
+        where (query {
+          for a in t.GetCustomAttributes() do
+          exists (a.GetType() = typeof<BindServiceMethodAttribute>)
+        } && t.IsAbstract)
+        select (t.AsType())
+      }
 
   module Saturn =
 

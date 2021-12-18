@@ -43,14 +43,12 @@
       "Queil.Gmox.Core": {
         "type": "Direct",
         "requested": "[0.1.0-alpha.*, )",
-        "resolved": "0.1.0-alpha.2",
-        "contentHash": "xpzTY5uGbTlmexSuY2EGc+Tn7vKxH/Q6FZlOPJmIo9ojtBo9cqCPZy3iVsyyw8k96lIOTeDzhlcFxHqkqOki3Q==",
+        "resolved": "0.1.0-alpha.3",
+        "contentHash": "dLcgZHuXSREQSlqvOGLbJJb7VzRXnSEe04jf9FbxMpGQB1gg3hxIR+ddefeP6OLoJike7Dhdev4+rOo2jKyeUA==",
         "dependencies": {
           "FSharp.Core": "6.0.1",
           "Google.Protobuf": "3.19.1",
-          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
           "Grpc.Core": "2.42.0",
-          "Saturn": "0.15.0",
           "System.Reflection.Emit": "4.7.0",
           "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
         }

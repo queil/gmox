@@ -44,23 +44,15 @@ let router =
         })
     }
 
-let services =
-  query {
-    for t in (typeof<Grpc.Health.V1.Health>).Assembly.DefinedTypes do
-    where (query {
-      for a in t.GetCustomAttributes() do
-      exists (a.GetType() = typeof<BindServiceMethodAttribute>)
-    } && t.IsAbstract)
-    select (t.AsType())
-  }
-
 let app =
   application {
     listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
-    use_dynamic_grpc [yield! services]
+    use_dynamic_grpc [
+      yield! Extensions.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health>
+    ]
     use_router router
     service_config (fun svcs ->
       let options = SystemTextJson.Serializer.DefaultOptions
