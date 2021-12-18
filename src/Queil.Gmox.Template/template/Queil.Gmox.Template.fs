@@ -13,6 +13,8 @@ open Queil.Gmox.Extensions.Saturn
 open Queil.Gmox.Extensions.Json
 open System
 open System.Reflection
+open Microsoft.AspNetCore.Routing
+open Grpc.AspNetCore.Server
 
 let router =
   router {
@@ -58,7 +60,7 @@ let app =
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
-    use_dynamic_grpc_services [yield! services]
+    use_dynamic_grpc [yield! services]
     use_router router
     service_config (fun svcs ->
       let options = SystemTextJson.Serializer.DefaultOptions
@@ -66,7 +68,17 @@ let app =
       options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
       options.Converters.Add(ProtoMessageConverterFactory())
       svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
-      svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
+      svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString)) |> ignore
+      svcs.AddSingleton<GetGrpcMethod>(Func<IServiceProvider, GetGrpcMethod>(fun f ->
+          let src = f.GetRequiredService<EndpointDataSource>()
+          fun s ->
+          let method =
+            src.Endpoints
+            |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
+            |> Seq.filter (not << isNull)
+            |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
+          method.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
+      ))
     )
   }
 
