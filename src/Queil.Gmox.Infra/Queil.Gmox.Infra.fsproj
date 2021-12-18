@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Gmox gRPC Mock Server Infrastructure</Description>
+    <PackageTags>gmox</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Json.fs" />
+    <Compile Include="Grpc.fs" />
+    <Compile Include="Saturn.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.41.0" />
+    <PackageReference Include="Saturn" Version="0.15.0" />
+  </ItemGroup>
+
+</Project>
