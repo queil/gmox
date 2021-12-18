@@ -6,6 +6,7 @@
     <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>gmox</ToolCommandName>
+    <PackageTags>dotnet;tool;gmox;mock;grpc</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

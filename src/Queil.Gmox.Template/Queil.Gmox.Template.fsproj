@@ -6,7 +6,7 @@
     <PackageId>Queil.Gmox.Template</PackageId>
     <Title>Gmox gRPC Mock Server Template</Title>
     <Description>Template for Gmox gRPC Mock Server.</Description>
-    <PackageTags>dotnet-new;templates;gmox</PackageTags>
+    <PackageTags>dotnet-new;templates;gmox;mock;grpc</PackageTags>
     <TargetFramework>netstandard2.1</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>

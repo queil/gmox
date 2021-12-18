@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <PackageTags>gmox</PackageTags>
+    <PackageTags>gmox;grpc;mock</PackageTags>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <Authors>Krzysztof Kraszewski</Authors>
