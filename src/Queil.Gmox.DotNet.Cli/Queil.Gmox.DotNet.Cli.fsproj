@@ -3,14 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>gmox</ToolCommandName>
-    <PackageTags>dotnet;tool;gmox;mock;grpc</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <Compile Include="App.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="6.1.1" />
   </ItemGroup>
 
 </Project>

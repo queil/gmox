@@ -98,3 +98,9 @@ dotnet new --uninstall $(pwd) && dotnet new --install $(pwd)
 # then in another dir
 dotnet new gmox -nu Your.NuGet.Package -as Your.NuGet.Package.Assembly.Type
 ```
+
+### Regenerate CLI tool from template
+
+```bash
+dotnet new gmox --output src --name Queil.Gmox.DotNet.Cli -nu Your.NuGet.Package -as Your.NuGet.Package.Assembly.Type --force
+```
