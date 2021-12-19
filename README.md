@@ -87,9 +87,10 @@ Both the CLI tool and a server generated from the template may be packaged as Do
   * [ ] `regexp`
 * [ ] Handle errors:
   * [ ] `/add` - if input JSON is not a valid request for the specified service method
+  * [ ] `/add` - if user tries configure a stub for a non-existent service
 * [ ] Support the following source of service schemas for static stubbing:
   1. [x] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
-  2. [ ] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)
+  2. [x] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)
   3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
 * [ ] Support recording received calls and expose as via the control API
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
@@ -98,7 +99,6 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 ## Development
 
 ### Testing `Queil.Gmox.Template`
-
 
 ```bash
 DIR=./src/Queil.Gmox.Template/template && dotnet new --uninstall $DIR && dotnet new --install $DIR
