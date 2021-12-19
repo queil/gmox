@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "Krzysztof Kraszewski",
+  "author": "queil (Krzysztof Kraszewski)",
   "classifications": [ "Queil", "Gmox", "gRPC", "Mock" ],
   "identity": "Queil.Gmox.Template.FSharp",
   "sourceName": "Queil.Gmox.Template.FSharp",
@@ -22,6 +22,12 @@
       "description": "One of the types from the referenced NuGet so it can be statically referenced in code. All the gRPC services from that type's assembly get auto-discovered",
       "replaces": "Grpc.Health.V1.Health",
       "isRequired": true
+    },
+    "bindService": {
+      "type": "parameter",
+      "description": "Internal-only. If set to false the template creates an empty mock server.",
+      "defaultValue": "true",
+      "isRequired": false
     }
   }
 }

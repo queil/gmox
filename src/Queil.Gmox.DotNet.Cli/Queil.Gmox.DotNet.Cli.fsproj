@@ -11,6 +11,5 @@
     <PackageReference Include="Queil.Gmox.Core" Version="0.1.0-alpha.*" />
     <PackageReference Include="Queil.Gmox.Infra" Version="0.1.0-alpha.*" />
     <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
-    <PackageReference Include="Grpc.HealthCheck" Version="*" />
   </ItemGroup>
 </Project>

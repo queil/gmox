@@ -51,9 +51,6 @@ let app =
     memory_cache
     use_gzip
     use_dynamic_grpc [
-      yield! (
-        Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
-      )
     ]
     use_router router
     service_config (fun svcs ->

@@ -28,17 +28,6 @@
           "System.Text.Json": "4.6.0"
         }
       },
-      "Grpc.HealthCheck": {
-        "type": "Direct",
-        "requested": "[*, )",
-        "resolved": "2.42.0",
-        "contentHash": "hI8WCZwyNx6j/cdYTiwYJ242YBVhebp5e8ukSL2g9TrZsjZsLTgRKlsfs+Zjok8+ukQz/lhYo1LC/NPHqQ2yIg==",
-        "dependencies": {
-          "Google.Protobuf": "3.18.1",
-          "Grpc.Core.Api": "2.42.0",
-          "System.Threading.Channels": "4.6.0"
-        }
-      },
       "Queil.Gmox.Core": {
         "type": "Direct",
         "requested": "[0.1.0-alpha.*, )",
@@ -377,11 +366,6 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0",
           "System.Text.Encodings.Web": "6.0.0"
         }
-      },
-      "System.Threading.Channels": {
-        "type": "Transitive",
-        "resolved": "4.6.0",
-        "contentHash": "xdCw/eEo1XwxQNuhTLD10gaXnVt5rkKZCPjttXE5vtqwEkheqdGrNBcbU0UP9zWdgIwZWD+4NEl4OS10jKrZtg=="
       },
       "System.Threading.Tasks": {
         "type": "Transitive",

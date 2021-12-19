@@ -51,9 +51,11 @@ let app =
     memory_cache
     use_gzip
     use_dynamic_grpc [
+#if (bindService)
       yield! (
         Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
       )
+#endif
     ]
     use_router router
     service_config (fun svcs ->

@@ -92,16 +92,22 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 
 ### Testing `Queil.Gmox.Template`
 
+
 ```bash
 DIR=./src/Queil.Gmox.Template/template && dotnet new --uninstall $DIR && dotnet new --install $DIR
 # then in another dir
 dotnet new gmox -nu Your.NuGet.Package -as Your.NuGet.Package.Assembly.Type
 ```
 
+Once the template is installed it can be refreshed by:
+
+```bash
+dotnet new --debug:rebuildcache
+```
+
 ### Regenerate CLI tool from template
 
 ```bash
 cd src/Queil.Gmox.DotNet.Cli
-dotnet new gmox --name Queil.Gmox.DotNet.Cli -nu Grpc.HealthCheck -as Grpc.Health.V1.Health --force
-# then revert the nuget and service change - this should be conditional in the template
+dotnet new gmox --name Queil.Gmox.DotNet.Cli -nu ignore -as ignore -b=false --force
 ```
