@@ -56,9 +56,14 @@ Installation: `dotnet tool install --global Queil.Gmox.DotNet.Cli`
 
 Usage: 
 
+Run `gmox`:
+
 ```bash
 dotnet gmox --proto ~/protos/*.proto --import-path ~/protos/proto/shared/*.proto  ~/protos/other/shared/*.proto  --protoroot ~/protos
 ```
+
+You can play with the mock using `grpcui` if needed: `grpcui -plaintext  localhost:4770`
+
 ### Dotnet Template
 
 Gmox as a dotnet template is useful when you want to create a mock server for a particular service, equip it with a curated set of default rules, and/or it runs in an environment where you have no access to protos.
