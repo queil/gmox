@@ -15,6 +15,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="template\*" />

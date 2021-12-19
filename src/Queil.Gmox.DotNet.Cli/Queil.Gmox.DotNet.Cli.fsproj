@@ -6,6 +6,7 @@
     <ToolCommandName>gmox</ToolCommandName>
     <PackageTags>dotnet;tool;gmox;mock;grpc</PackageTags>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <Import Project="./template/App.fsproj" />
