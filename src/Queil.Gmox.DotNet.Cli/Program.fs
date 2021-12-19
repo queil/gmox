@@ -84,14 +84,9 @@ try
 
   let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
-  run (app [yield! query {
-    for t in asm.DefinedTypes do
-    where (query {
-      for a in t.GetCustomAttributes() do
-      exists (a.GetType() = typeof<BindServiceMethodAttribute>)
-    } && t.IsAbstract)
-    select (t.AsType())
-  }])
+  run (app [
+    yield! Queil.Gmox.Infra.Grpc.servicesFromAssembly asm
+  ])
 
 finally
   dir.Delete(true)
