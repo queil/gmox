@@ -44,16 +44,22 @@ let router =
         })
     }
 
+#if (standalone)
+let app (services: Type list) =
+#else
 let app =
+#endif
   application {
     listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
     use_dynamic_grpc [
-#if (bindService)
+#if (standalone)
+      yield! services
+#else
       yield! (
-        Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
+        Queil.Gmox.Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
       )
 #endif
     ]
@@ -78,5 +84,6 @@ let app =
       svcs.AddSingleton<StubStore>()
     )
   }
-
+#if (!standalone)
 run app
+#endif

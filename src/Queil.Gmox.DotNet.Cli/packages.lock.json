@@ -12,6 +12,21 @@
           "System.Configuration.ConfigurationManager": "4.4.0"
         }
       },
+      "Fake.Core.Process": {
+        "type": "Direct",
+        "requested": "[5.20.4, )",
+        "resolved": "5.20.4",
+        "contentHash": "pAh5HX8ctF6gS7ME+c+bXQsXMIyHIy48Q4WB0Yk4ulQzwpCZ0nA7fKJnjyscNd4QUNXi8W9UuWEZaWkVl0xQ5A==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fake.Core.Environment": "5.20.4",
+          "Fake.Core.FakeVar": "5.20.4",
+          "Fake.Core.String": "5.20.4",
+          "Fake.Core.Trace": "5.20.4",
+          "Fake.IO.FileSystem": "5.20.4",
+          "System.Collections.Immutable": "1.7.1"
+        }
+      },
       "FSharp.Core": {
         "type": "Direct",
         "requested": "[6.0.1, )",
@@ -50,6 +65,58 @@
           "FSharp.Core": "6.0.1",
           "Grpc.AspNetCore.Server.Reflection": "2.41.0",
           "Saturn": "0.15.0"
+        }
+      },
+      "Fake.Core.Context": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "aD5FyaRRkkprjT3F19XNYu7365ZICRBay4SulJ/icolT4Qiy5uynptudgdb2aEdTN3xQw3POHE9cA8kQzHpujg==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
+      },
+      "Fake.Core.Environment": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "ZH3xfV0M/TWTGFGkkoyYbVKWIU2stwqSM9uC6v8d7zbNLr6b43r6kdOOVoCdoPYOblu4NF9v2fU2C3fZzeGZNQ==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
+      },
+      "Fake.Core.FakeVar": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "GJygxskYXmUb55HJIk4TE/D6qF8m8YY/RkLSbaJ/Pv0Wxy47Vu7oMBS0uiw3raS/pi3AMyiGOpUNFfG4dfT31g==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fake.Core.Context": "5.20.4"
+        }
+      },
+      "Fake.Core.String": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "AsO/fkWIK21If5h0GEA71l9gx+lKYQP2+zGtH3ujUQ7G+79MZs5J7qbAyWtSi2iyp4UUsLO6xQPBsmW4RVW4TA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2"
+        }
+      },
+      "Fake.Core.Trace": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "/Ys/PpicsHxZCWCz1MyJtNtVKKcnIjyANtUY+P4w+fO7KfWgvEzW6CpYIcy4aSgQOBP+zSslLbH2zcO7swsmxA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fake.Core.Environment": "5.20.4",
+          "Fake.Core.FakeVar": "5.20.4"
+        }
+      },
+      "Fake.IO.FileSystem": {
+        "type": "Transitive",
+        "resolved": "5.20.4",
+        "contentHash": "WQuzDvVSawFob1hJLYEmNbp87d9YJ/j8zi31It4OxRJMNh4CG154avSzgQUHVZi3zc8LApJ9YVBbKtzby5igFA==",
+        "dependencies": {
+          "FSharp.Core": "4.7.2",
+          "Fake.Core.String": "5.20.4"
         }
       },
       "FSharp.Control.Websockets": {
@@ -233,6 +300,11 @@
           "Giraffe": "5.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.7"
         }
+      },
+      "System.Collections.Immutable": {
+        "type": "Transitive",
+        "resolved": "1.7.1",
+        "contentHash": "B43Zsz5EfMwyEbnObwRxW5u85fzJma3lrDeGcSAV1qkhSRTNY5uXAByTn9h9ddNdhM+4/YoLc/CI43umjwIl9Q=="
       },
       "System.Configuration.ConfigurationManager": {
         "type": "Transitive",

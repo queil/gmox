@@ -32,8 +32,8 @@
       "Queil.Gmox.Core": {
         "type": "Direct",
         "requested": "[0.1.0-alpha.*, )",
-        "resolved": "0.1.0-alpha.4",
-        "contentHash": "8FEQCyM8G5fTeLIAPe4M4wKE8V2vMLeCVyakIunXVygb94VL4II+2/HMtEmJisdj37foFdr3x0p3uucw5H/7AA==",
+        "resolved": "0.1.0-alpha.5",
+        "contentHash": "N5Oi561WnZFFbK1gIyIJtcwKgq8GzDk9rg9kIw6kmpEr8XLJTYY/W6IKtzynsPc10B76t5GXdulXD8zj0uHCQQ==",
         "dependencies": {
           "FSharp.Core": "6.0.1",
           "Google.Protobuf": "3.19.1",
@@ -45,8 +45,8 @@
       "Queil.Gmox.Infra": {
         "type": "Direct",
         "requested": "[0.1.0-alpha.*, )",
-        "resolved": "0.1.0-alpha.4",
-        "contentHash": "xOp+JNyL7Pvd1DVGCEHROvuY0pYvODYgUqyzqVA1p+Boij3jRbJh8SEJJuJQixvd2plNiVM7KEYmRmhrSMsNCw==",
+        "resolved": "0.1.0-alpha.5",
+        "contentHash": "NzEgWIVGF79PeWvozJoxAfXg/I8K/0eIXVp3qfz447C4jRAUQNMQrC+m1qPSaRLWJnlfsbp37BbDXYRVS2WcLQ==",
         "dependencies": {
           "FSharp.Core": "6.0.1",
           "Grpc.AspNetCore.Server.Reflection": "2.41.0",

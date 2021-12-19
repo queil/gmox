@@ -16,12 +16,14 @@ module Grpc =
         .MakeGenericMethod(serviceType)
         .Invoke(null, [| x |]) |> ignore
 
-  let servicesFromAssemblyOf<'a> =
+  let servicesFromAssembly (asm: Assembly) =
     query {
-      for t in (typeof<'a>).Assembly.DefinedTypes do
+      for t in asm.DefinedTypes do
       where (query {
         for a in t.GetCustomAttributes() do
         exists (a.GetType() = typeof<BindServiceMethodAttribute>)
       } && t.IsAbstract)
       select (t.AsType())
     }
+
+  let servicesFromAssemblyOf<'a> = typeof<'a>.Assembly |> servicesFromAssembly

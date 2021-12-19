@@ -52,6 +52,13 @@ The first match wins.
 Gmox as a dotnet CLI tool is useful in development scenarios when you want to quickly create a mock
 server from protos.
 
+Installation: `dotnet tool install --global Queil.Gmox.DotNet.Cli`
+
+Usage: 
+
+```bash
+dotnet gmox --proto ~/protos/*.proto --import-path ~/protos/proto/shared/*.proto  ~/protos/other/shared/*.proto  --protoroot ~/protos
+```
 ### Dotnet Template
 
 Gmox as a dotnet template is useful when you want to create a mock server for a particular service, equip it with a curated set of default rules, and/or it runs in an environment where you have no access to protos.
@@ -86,7 +93,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
   3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
 * [ ] Support recording received calls and expose as via the control API
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
-
+* [ ] Support preloading stubs form YAML/JSON in the dotnet cli mode
 
 ## Development
 

@@ -44,13 +44,14 @@ let router =
         })
     }
 
-let app =
+let app (services: Type list) =
   application {
     listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
     use_dynamic_grpc [
+      yield! services
     ]
     use_router router
     service_config (fun svcs ->
@@ -73,5 +74,3 @@ let app =
       svcs.AddSingleton<StubStore>()
     )
   }
-
-run app
