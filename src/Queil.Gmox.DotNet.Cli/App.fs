@@ -4,7 +4,8 @@ open Giraffe
 open Grpc.AspNetCore.Server
 open Queil.Gmox.Infra.Json
 open Queil.Gmox.Infra.Saturn
-open Queil.Gmox.Types
+open Queil.Gmox.Core
+open Queil.Gmox.Core.Types
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.DependencyInjection
@@ -51,7 +52,7 @@ let app =
     use_gzip
     use_dynamic_grpc [
       yield! (
-        Infra.Grpc.servicesFromAssemblyOf<Your.NuGet.Package.Assembly.Type> |> Seq.map Emit.makeImpl
+        Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
       )
     ]
     use_router router

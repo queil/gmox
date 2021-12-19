@@ -4,7 +4,8 @@ open Giraffe
 open Grpc.AspNetCore.Server
 open Queil.Gmox.Infra.Json
 open Queil.Gmox.Infra.Saturn
-open Queil.Gmox.Types
+open Queil.Gmox.Core
+open Queil.Gmox.Core.Types
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.DependencyInjection
