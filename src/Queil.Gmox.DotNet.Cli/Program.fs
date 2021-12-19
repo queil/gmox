@@ -6,7 +6,6 @@ open Saturn
 open System.IO
 open System.Reflection
 open Fake.Core
-open Grpc.Core
 
 type ProjInfo = {
   Name: string
@@ -17,15 +16,15 @@ type ProjInfo = {
 with member x.OutputAssemblyFullPath () = Path.Combine(x.Path, x.CompileOutputPath, $"{x.Name}.dll")
 
 let createTempProj (info: ProjInfo) =
-  
+
   let csProjPath = Path.Combine(info.Path, $"{info.Name}.csproj")
 
-  let importCompiles indent = 
+  let importCompiles indent =
     info.Options.ImportPaths
     |> Seq.map (fun p -> $"""{indent}<Protobuf Include="{p}" GrpcServices="None" ProtoRoot="{info.Options.ProtoRoot}" />""")
     |> String.concat System.Environment.NewLine
 
-  let protos indent = 
+  let protos indent =
     info.Options.Proto
     |> Seq.map (fun p -> $"""{indent}<Protobuf Include="{p}" GrpcServices="Server" ProtoRoot="{info.Options.ProtoRoot}" />""")
     |> String.concat System.Environment.NewLine
@@ -50,7 +49,7 @@ let createTempProj (info: ProjInfo) =
 </ItemGroup>
 
 </Project>"""
-  
+
   File.WriteAllText(Path.Combine(info.Path, "Program.cs"), "")
   File.WriteAllText(csProjPath, template)
 
@@ -64,30 +63,33 @@ let tempProjPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())
 let dir = Directory.CreateDirectory(tempProjPath)
 
 try
+  try
+    let opts =
+      System.Environment.GetCommandLineArgs().[1..]
+      |> parseOptions
 
-  let opts = 
-    System.Environment.GetCommandLineArgs().[1..]
-    |> parseOptions
+    printfn "%A" opts
 
-  printfn "%A" opts
+    let projInfo = {
+      Name = "grpc"
+      Path = tempProjPath
+      CompileOutputPath = "out"
+      Options = opts
+    }
 
-  let projInfo = {
-    Name = "grpc"
-    Path = tempProjPath
-    CompileOutputPath = "out"
-    Options = opts
-  }
+    projInfo |> createTempProj
+    |> Proc.run
+    |> ignore
 
-  projInfo |> createTempProj
-  |> Proc.run
-  |> ignore
+    let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
-  let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
-
-  run (app [
-    yield! Queil.Gmox.Infra.Grpc.servicesFromAssembly asm
-  ])
-
+    run (app [
+      yield! Queil.Gmox.Infra.Grpc.servicesFromAssembly asm
+    ])
+  with
+    | :? Argu.ArguParseException as p ->
+      printfn "%s" p.Message
+    | e -> printfn "%s" (e.ToString())
 finally
   dir.Delete(true)
   ()
