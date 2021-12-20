@@ -1,10 +1,11 @@
-namespace Queil.Gmox
+namespace Queil.Gmox.Core
+
+open System.Reflection
+open System.Reflection.Emit
+open System
+open Types
 
 module Emit =
-  open System.Reflection
-  open System.Reflection.Emit
-  open System
-  open Types
 
   let makeImpl (typ:Type) =
 

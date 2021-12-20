@@ -1,16 +1,20 @@
 module Queil.Gmox.App
 
 open Giraffe
-open Saturn
+open Grpc.AspNetCore.Server
+open Queil.Gmox.Infra.Json
+open Queil.Gmox.Infra.Saturn
+open Queil.Gmox.Core
+open Queil.Gmox.Core.Types
+open Microsoft.AspNetCore.Routing
+open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.DependencyInjection
+open Saturn
+open System
+open System.Reflection
+open System.Text.Json
 open System.Text.Json.Serialization
 open System.Runtime.Serialization
-open Microsoft.AspNetCore.Server.Kestrel.Core
-open System.Text.Json
-open Queil.Gmox.Types
-open Queil.Gmox.Extensions.Saturn
-open Queil.Gmox.Extensions.Json
-open System
 
 let router =
   router {
@@ -40,14 +44,24 @@ let router =
         })
     }
 
+#if (standalone)
+let app (services: Type list) =
+#else
 let app =
+#endif
   application {
     listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
-    use_dynamic_grpc_services [
-      typeof<Grpc.Health.V1.Health.HealthBase>
+    use_dynamic_grpc [
+#if (standalone)
+      yield! services
+#else
+      yield! (
+        Queil.Gmox.Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl
+      )
+#endif
     ]
     use_router router
     service_config (fun svcs ->
@@ -56,8 +70,20 @@ let app =
       options.Converters.Add(JsonFSharpConverter(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike))
       options.Converters.Add(ProtoMessageConverterFactory())
       svcs.AddSingleton<Json.ISerializer>(SystemTextJson.Serializer(options)) |> ignore
-      svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString))
+      svcs.AddSingleton<Serialize>(Func<IServiceProvider,Serialize>(fun f -> f.GetRequiredService<Json.ISerializer>().SerializeToString)) |> ignore
+      svcs.AddSingleton<GetGrpcMethod>(Func<IServiceProvider, GetGrpcMethod>(fun f ->
+          let src = f.GetRequiredService<EndpointDataSource>()
+          fun s ->
+          let method =
+            src.Endpoints
+            |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
+            |> Seq.filter (not << isNull)
+            |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
+          method.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
+      )) |> ignore
+      svcs.AddSingleton<StubStore>()
     )
   }
-
+#if (!standalone)
 run app
+#endif

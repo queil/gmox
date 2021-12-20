@@ -1,29 +1,27 @@
-namespace Queil.Gmox
+namespace Queil.Gmox.Core
+
+open Google.Protobuf
+open Grpc.Core
+open System
+open System.Collections.Generic
+open System.Reflection
+open System.Text.Json.JsonDiffPatch
+open System.Text.Json.Nodes
+open System.Threading.Tasks
 
 module Types =
-
-  open Grpc.Core
-  open System.Reflection
-  open System
-  open Google.Protobuf
-  open System.Threading.Tasks
-  open Microsoft.AspNetCore.Routing
-  open Grpc.AspNetCore.Server
-  open System.Collections.Generic
-  open System.Text.Json.JsonDiffPatch
-  open System.Text.Json.Nodes
 
   [<CustomEquality>][<NoComparison>]
   type Stub = {
     Method: string
-    Expect: Rule
-    Output: Output
+    Match: Rule
+    Return: Output
   }
   with
     interface IEquatable<Stub> with
       member this.Equals other =
         this.Method = other.Method &&
-        JsonDiffPatcher.DeepEquals(this.Expect.Matcher, other.Expect.Matcher) 
+        JsonDiffPatcher.DeepEquals(this.Match.Matcher, other.Match.Matcher) 
     override this.Equals other =
       match other with
       | :? Stub as s -> (this :> IEquatable<_>).Equals s
@@ -53,11 +51,9 @@ module Types =
     Data: JsonNode
   }
 
-
   type Serialize = obj -> string
+  type GetGrpcMethod = Stub -> MethodInfo
   
-  
-
   let (|JArr|JObj|JVal|) (n:JsonNode) =
     match n with
     | :? JsonArray as x -> JArr(x)
@@ -67,10 +63,7 @@ module Types =
   
   type Mode = Exact | Partial | Matches 
 
-
-
-
-  type StubStore(serialize: Serialize, endpoints: EndpointDataSource) =
+  type StubStore(serialize: Serialize, getGrpcMethod: GetGrpcMethod) =
     let stubs = Stubs()
 
     let getResponseType (m:MethodInfo) =
@@ -78,14 +71,6 @@ module Types =
       if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
       then returnType.GenericTypeArguments.[0]
       else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
-
-    let getGrpcMethod (s:Stub) =
-      let grpcMethod =
-        endpoints.Endpoints
-        |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
-        |> Seq.filter (not << isNull)
-        |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
-      grpcMethod.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
     
     let parserFor (typ:Type) =
       let parser =
@@ -105,14 +90,14 @@ module Types =
         | None -> 
           let default' () = Activator.CreateInstance(getResponseType (mb :?> MethodInfo)) :?> IMessage
           default' ()
-        | Some s -> s.Output.Msg
+        | Some s -> s.Return.Msg
 
       Task.FromResult(response)
 
     member _.addOrReplace (s:Stub) =
       let responseType = s |> (getGrpcMethod >> getResponseType)
       let parse = parserFor responseType
-      s.Output.Msg <- s.Output.Data |> serialize |> parse
+      s.Return.Msg <- s.Return.Data |> serialize |> parse
       stubs.Add s |> ignore
 
     member _.list () = stubs |> List.ofSeq
@@ -160,4 +145,4 @@ module Types =
           | Partial, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
           | _ -> false
         next exp actual
-      stubs |> Seq.tryFind (fun x -> x.Method = test.Method && isMatch x.Expect test.Data)
+      stubs |> Seq.tryFind (fun x -> x.Method = test.Method && isMatch x.Match test.Data)

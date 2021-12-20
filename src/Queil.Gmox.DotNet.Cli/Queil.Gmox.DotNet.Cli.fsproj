@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>gmox</ToolCommandName>
+    <PackageTags>dotnet;tool;gmox;mock;grpc</PackageTags>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <Import Project="./template/App.fsproj" />
+
+  <ItemGroup>
+    <Compile Include="Cli.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="6.1.1" />
+    <PackageReference Include="Fake.Core.Process" Version="5.20.4" />
+  </ItemGroup>
+
+</Project>

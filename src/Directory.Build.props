@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <PackageTags>gmox;grpc;mock</PackageTags>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <Authors>Krzysztof Kraszewski</Authors>
+    <Copyright>2021-2022 © queil</Copyright>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryUrl>https://github.com/queil/gmox</RepositoryUrl>
+    <FsDocsSourceRepository>https://github.com/queil/gmox/tree/master</FsDocsSourceRepository>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+ </Project>

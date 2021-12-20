@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "queil (Krzysztof Kraszewski)",
+  "classifications": [ "Queil", "Gmox", "gRPC", "Mock" ],
+  "identity": "Queil.Gmox.Template.FSharp",
+  "sourceName": "Queil.Gmox.Template.FSharp",
+  "name": "Gmox gRPC Mock Server",
+  "shortName": "gmox",
+  "tags": {
+    "type": "project",
+    "language": "F#"
+  },
+  "symbols" : {
+    "nuget": {
+      "type": "parameter",
+      "description": "NuGet package containing gRPC service definition(s) to mock.",
+      "replaces": "Grpc.HealthCheck",
+      "isRequired": true
+    },
+    "assembly-marker-type" : {
+      "type": "parameter",
+      "description": "One of the types from the referenced NuGet so it can be statically referenced in code. All the gRPC services from that type's assembly get auto-discovered",
+      "replaces": "Grpc.Health.V1.Health",
+      "isRequired": true
+    },
+    "standalone": {
+      "type": "parameter",
+      "description": "Internal-only. If set to true the template creates an empty mock server.",
+      "defaultValue": "false",
+      "isRequired": false
+    }
+  }
+}
