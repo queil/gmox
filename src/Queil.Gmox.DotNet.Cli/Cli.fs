@@ -29,14 +29,13 @@ type Options = {
 
   let parseOptions argv =
     let parser = ArgumentParser.Create<CliArgs>(programName = "gmox")
-
     let cmd = parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
     let cwd = cmd.TryGetResult(Work_Dir) |> Option.defaultValue (Directory.GetCurrentDirectory()) |> Path.TrimEndingDirectorySeparator
     let fullPath (path:string) = Path.Combine(cwd, path |> Path.TrimEndingDirectorySeparator)
     {
-      Proto = cmd.GetResult(Protos) |> Seq.map fullPath |> Seq.toList
+      Proto = cmd.GetResult(Protos) |> List.map fullPath
       ProtoRoot = cmd.GetResult(Root_Dir) |> fullPath
-      ImportPaths = cmd.GetResult(Imports) |> Seq.map fullPath |> Seq.toList
-      StubsDir = cmd.TryGetResult(Stubs_Dir) |> Option.map(fullPath)
+      ImportPaths = cmd.TryGetResult(Imports) |> Option.defaultValue [] |> List.map fullPath
+      StubsDir = cmd.TryGetResult(Stubs_Dir) |> Option.map fullPath
       WorkDir = cwd
     }
