@@ -59,7 +59,7 @@ Usage:
 Run `gmox`:
 
 ```bash
-gmox --protos protos/*.proto --imports protos/proto/shared/*.proto protos/other/shared/*.proto --root-dir protos
+gmox --protos protos/*.proto --imports protos/proto/shared/*.proto protos/other/shared/*.proto --root-dir protos --stubs-dir stubs
 ```
 
 You can play with the mock using `grpcui` if needed: `grpcui -plaintext  localhost:4770`
