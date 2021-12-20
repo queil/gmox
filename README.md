@@ -100,6 +100,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 * [ ] Support recording received calls and expose as via the control API
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
 * [ ] Support preloading stubs form YAML/JSON in the dotnet cli mode
+* [ ] Support specifying port numbers
 
 ## Development
 
