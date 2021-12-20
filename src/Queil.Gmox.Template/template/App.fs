@@ -51,7 +51,7 @@ let router =
 
 type AppSettings = {
   Services: Type list
-  StubPreloadDir: string
+  StubPreloadDir: string option
 }
 
 let app (config: AppSettings) =
@@ -88,20 +88,23 @@ let app (config: AppSettings) =
           new StubPreloader with
             override _.StartAsync(_: Threading.CancellationToken): Task = 
               task {
-                let serializer = f.GetRequiredService<Json.ISerializer>()
-                let store = f.GetRequiredService<StubStore>()
-                do! (
-                  Directory.EnumerateFiles(config.StubPreloadDir, "*.json")
-                  |> Seq.map(fun path ->
-                      task {
-                        use stream = File.OpenRead(path)
-                        let! stubs = serializer.DeserializeAsync<Stub []>(stream)
-                        for s in stubs do
-                          store.addOrReplace s
-                      }) 
-                  |> Seq.map (fun x -> x :> Task)
-                  |> Seq.toArray
-                  |> Task.WhenAll
+                match config.StubPreloadDir with
+                | None -> ()
+                | Some stubDir -> 
+                  let serializer = f.GetRequiredService<Json.ISerializer>()
+                  let store = f.GetRequiredService<StubStore>()
+                  do! (
+                    Directory.EnumerateFiles(stubDir, "*.json")
+                    |> Seq.map(fun path ->
+                        task {
+                          use stream = File.OpenRead(path)
+                          let! stubs = serializer.DeserializeAsync<Stub []>(stream)
+                          for s in stubs do
+                            store.addOrReplace s
+                        }) 
+                    |> Seq.map (fun x -> x :> Task)
+                    |> Seq.toArray
+                    |> Task.WhenAll
                 )
               }
             override _.StopAsync(_: Threading.CancellationToken): Task = Task.CompletedTask
@@ -111,6 +114,6 @@ let app (config: AppSettings) =
 #if (!standalone)
 run (app {
   Services = Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl |> Seq.toList
-  StubPreloadDir = "stubs"
+  StubPreloadDir = Some "stubs"
 })
 #endif

@@ -9,12 +9,17 @@ open Queil.Gmox.Core.Types
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Hosting
 open Saturn
 open System
+open System.IO
 open System.Reflection
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.Runtime.Serialization
+open System.Threading.Tasks
+
+type StubPreloader = IHostedService
 
 let router =
   router {
@@ -44,14 +49,20 @@ let router =
         })
     }
 
-let app (services: Type list) =
+type AppSettings = {
+  Services: Type list
+  StubPreloadDir: string option
+}
+
+let app (config: AppSettings) =
+
   application {
     listen_local 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
     listen_local 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
     memory_cache
     use_gzip
     use_dynamic_grpc [
-      yield! services
+      yield! config.Services
     ]
     use_router router
     service_config (fun svcs ->
@@ -71,6 +82,32 @@ let app (services: Type list) =
             |> Seq.find(fun x -> x.Method.FullName.[1..] = s.Method)
           method.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
       )) |> ignore
-      svcs.AddSingleton<StubStore>()
+      svcs.AddSingleton<StubStore>() |> ignore
+      svcs.AddSingleton<StubPreloader>(fun f ->
+        {
+          new StubPreloader with
+            override _.StartAsync(_: Threading.CancellationToken): Task = 
+              task {
+                match config.StubPreloadDir with
+                | None -> ()
+                | Some stubDir -> 
+                  let serializer = f.GetRequiredService<Json.ISerializer>()
+                  let store = f.GetRequiredService<StubStore>()
+                  do! (
+                    Directory.EnumerateFiles(stubDir, "*.json")
+                    |> Seq.map(fun path ->
+                        task {
+                          use stream = File.OpenRead(path)
+                          let! stubs = serializer.DeserializeAsync<Stub []>(stream)
+                          for s in stubs do
+                            store.addOrReplace s
+                        }) 
+                    |> Seq.map (fun x -> x :> Task)
+                    |> Seq.toArray
+                    |> Task.WhenAll
+                )
+              }
+            override _.StopAsync(_: Threading.CancellationToken): Task = Task.CompletedTask
+        })
     )
   }
