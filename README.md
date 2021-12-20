@@ -59,7 +59,7 @@ Usage:
 Run `gmox`:
 
 ```bash
-dotnet gmox --proto ~/protos/*.proto --import-path ~/protos/proto/shared/*.proto  ~/protos/other/shared/*.proto  --protoroot ~/protos
+gmox --protos protos/*.proto --imports protos/proto/shared/*.proto protos/other/shared/*.proto --root-dir ~/protos
 ```
 
 You can play with the mock using `grpcui` if needed: `grpcui -plaintext  localhost:4770`
