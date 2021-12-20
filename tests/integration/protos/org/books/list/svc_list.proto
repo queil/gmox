@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package org.books.list;
+
+import "google/protobuf/empty.proto";
+import "org/books/list/msg_list.proto";
+
+service ListService
+{
+    rpc ListBooks (google.protobuf.Empty) returns (ListResponse) {}
+}
