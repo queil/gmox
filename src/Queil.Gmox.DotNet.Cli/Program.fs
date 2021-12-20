@@ -85,7 +85,7 @@ try
 
     let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
-    run (app {
+    runGmox (app {
       Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
       StubPreloadDir = opts.StubsDir
     })

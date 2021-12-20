@@ -18,8 +18,7 @@ open System.Text.Json
 open System.Text.Json.Serialization
 open System.Runtime.Serialization
 open System.Threading.Tasks
-
-type StubPreloader = IHostedService
+open Microsoft.AspNetCore.Builder
 
 let router =
   router {
@@ -49,10 +48,19 @@ let router =
         })
     }
 
+type StubPreloader = unit -> unit
+
 type AppSettings = {
   Services: Type list
   StubPreloadDir: string option
 }
+
+let runGmox (app: IHostBuilder) =
+  let built = app.Build()
+  let lifetime = built.Services.GetRequiredService<IHostApplicationLifetime>()
+  let preloader = built.Services.GetRequiredService<StubPreloader>()
+  lifetime.ApplicationStarted.Register preloader |> ignore
+  built.Run()
 
 let app (config: AppSettings) =
 
@@ -83,37 +91,28 @@ let app (config: AppSettings) =
           method.ServiceType.GetMethod(s.Method.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
       )) |> ignore
       svcs.AddSingleton<StubStore>() |> ignore
-      svcs.AddSingleton<StubPreloader>(fun f ->
-        {
-          new StubPreloader with
-            override _.StartAsync(_: Threading.CancellationToken): Task = 
-              task {
-                match config.StubPreloadDir with
-                | None -> ()
-                | Some stubDir -> 
-                  let serializer = f.GetRequiredService<Json.ISerializer>()
-                  let store = f.GetRequiredService<StubStore>()
-                  do! (
-                    Directory.EnumerateFiles(stubDir, "*.json")
-                    |> Seq.map(fun path ->
-                        task {
-                          use stream = File.OpenRead(path)
-                          let! stubs = serializer.DeserializeAsync<Stub []>(stream)
-                          for s in stubs do
-                            store.addOrReplace s
-                        }) 
-                    |> Seq.map (fun x -> x :> Task)
-                    |> Seq.toArray
-                    |> Task.WhenAll
-                )
-              }
-            override _.StopAsync(_: Threading.CancellationToken): Task = Task.CompletedTask
-        })
+      svcs.AddSingleton<StubPreloader>(
+        Func<IServiceProvider, StubPreloader>(fun f -> fun () ->
+          match config.StubPreloadDir with
+          | None -> ()
+          | Some stubDir -> 
+            let serializer = f.GetRequiredService<Json.ISerializer>()
+            let store = f.GetRequiredService<StubStore>()
+            Directory.EnumerateFiles(stubDir, "*.json")
+            |> Seq.iter(fun path ->
+               let stubs = serializer.Deserialize<Stub []>(File.ReadAllBytes(path))
+               for s in stubs do
+                 store.addOrReplace s
+            ) 
+        )
+      )
     )
   }
 #if (!standalone)
-run (app {
+
+runGmox (app {
   Services = Infra.Grpc.servicesFromAssemblyOf<Grpc.Health.V1.Health> |> Seq.map Emit.makeImpl |> Seq.toList
   StubPreloadDir = Some "stubs"
 })
+
 #endif
