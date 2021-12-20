@@ -1,7 +1,9 @@
 module Queil.Gmox.Program
 
-open Queil.Gmox.CliArgs
 open Queil.Gmox.App
+open Queil.Gmox.CliArgs
+open Queil.Gmox.Core
+open Queil.Gmox.Infra
 open Saturn
 open System.IO
 open System.Reflection
@@ -84,7 +86,7 @@ try
     let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
     run (app [
-      yield! Queil.Gmox.Infra.Grpc.servicesFromAssembly asm
+      yield! (Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl)
     ])
   with
     | :? Argu.ArguParseException as p ->
