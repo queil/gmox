@@ -121,6 +121,6 @@ dotnet new --debug:rebuildcache
 ### Regenerate CLI tool from template
 
 ```bash
-cd src/Queil.Gmox.DotNet.Cli
-dotnet new gmox --name Queil.Gmox.DotNet.Cli -nu ignore -as ignore -b=false --force
+cd src/Queil.Gmox.DotNet.Cli/template
+dotnet new gmox --name App -nu ignore -amt ignore -s=true --force
 ```

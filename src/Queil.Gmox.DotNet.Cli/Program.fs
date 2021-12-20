@@ -85,9 +85,10 @@ try
 
     let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
-    run (app [
-      yield! (Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl)
-    ])
+    runGmox (app {
+      Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
+      StubPreloadDir = opts.StubsDir
+    })
   with
     | :? Argu.ArguParseException as p ->
       printfn "%s" p.Message
