@@ -88,7 +88,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
   * [ ] Add examples for API endpoints
 * [x] Support dynamic stubbing:
   * [x] `exact`
-  * [ ] `partial`
+  * [x] `partial`
   * [ ] `regexp`
 * [ ] Handle errors:
   * [ ] `/add` - if input JSON is not a valid request for the specified service method
@@ -97,9 +97,9 @@ Both the CLI tool and a server generated from the template may be packaged as Do
   1. [x] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
   2. [x] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)
   3. [ ] NuGet (runtime - as a dotnet tool, this might be not needed)
-* [ ] Support recording received calls and expose as via the control API
+* [ ] Support recording received calls and expose via the control API
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
-* [ ] Support preloading stubs form YAML/JSON in the dotnet cli mode
+* [x] Support preloading stubs form JSON
 * [ ] Support specifying port numbers
 
 ## Development
