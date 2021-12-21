@@ -4,38 +4,48 @@ open Argu
 open System.IO
 
 type CliArgs =
-| [<AltCommandLine("-p")>]Protos of string list
-| [<AltCommandLine("-r")>]Root_Dir of string
+| [<AltCommandLine("-p")>]Proto of string list
+| [<AltCommandLine("-r")>]Root of string
 | [<AltCommandLine("-i")>]Imports of string list
-| [<AltCommandLine("-s")>]Stubs_Dir of string
+| [<AltCommandLine("-s")>]Stub_Dir of string
 | [<AltCommandLine("-w")>]Work_Dir of string
+| [<AltCommandLine("-d")>]Debug_Mode
 with
   interface IArgParserTemplate with
     member this.Usage =
       match this with
-      | Protos _ -> "Proto paths to compile."
-      | Root_Dir _ -> "Proto root directory (e.g. if operating in a monorepo)."
+      | Proto _ -> "Proto file path(s) to compile."
+      | Root _ -> "Proto root directory (e.g. if operating in a monorepo)."
       | Imports _ -> "Additional protos import path(s)."
-      | Stubs_Dir _ -> "Directory containing stubs definitions to pre-load."
-      | Work_Dir _ -> "If specified overrides the current working directory."
+      | Stub_Dir _ -> "Directory containing stubs definitions to pre-load."
+      | Work_Dir _ -> "Overrides the current working directory."
+      | Debug_Mode _ -> "Debug mode."
 
 type Options = {
   Proto: string list
-  ProtoRoot: string
+  ProtoRoot: string option
   ImportPaths: string list
   StubsDir: string option
-  WorkDir: string
+  DebugMode: bool
 }
 
   let parseOptions argv =
     let parser = ArgumentParser.Create<CliArgs>(programName = "gmox")
     let cmd = parser.ParseCommandLine(inputs = argv, raiseOnUsage = true)
-    let cwd = cmd.TryGetResult(Work_Dir) |> Option.defaultValue (Directory.GetCurrentDirectory()) |> Path.TrimEndingDirectorySeparator
-    let fullPath (path:string) = Path.Combine(cwd, path |> Path.TrimEndingDirectorySeparator)
+    let trimEndSlash (p:string) = Path.TrimEndingDirectorySeparator p
+
+    let cwd =
+      (cmd.TryGetResult(Work_Dir))
+      |> Option.map(fun p -> if Path.IsPathRooted p then p else Path.Combine(Directory.GetCurrentDirectory(), p))
+      |> Option.defaultValue (Directory.GetCurrentDirectory())
+      |> trimEndSlash
+
+    let fullPath (path:string) = Path.Combine(cwd, trimEndSlash path)
+
     {
-      Proto = cmd.GetResult(Protos) |> List.map fullPath
-      ProtoRoot = cmd.GetResult(Root_Dir) |> fullPath
-      ImportPaths = cmd.TryGetResult(Imports) |> Option.defaultValue [] |> List.map fullPath
-      StubsDir = cmd.TryGetResult(Stubs_Dir) |> Option.map fullPath
-      WorkDir = cwd
+      Proto = cmd.GetResult(Proto) |> List.map fullPath
+      ProtoRoot = cmd.TryGetResult(Root) |> Option.map fullPath
+      ImportPaths = cmd.TryGetResult(Imports) |> Option.defaultValue ["."] //|> List.map fullPath
+      StubsDir = cmd.TryGetResult(Stub_Dir) |> Option.map fullPath
+      DebugMode = cmd.Contains(Debug_Mode)
     }

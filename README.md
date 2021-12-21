@@ -59,7 +59,8 @@ Usage:
 Run `gmox`:
 
 ```bash
-gmox --protos protos/*.proto --imports protos/proto/shared/*.proto protos/other/shared/*.proto --root-dir protos --stubs-dir stubs
+# assuming cd = root of this repo
+gmox --proto tests/integration/protos/org/books/list/svc_list.proto --root tests/integration/protos --stub-dir tests/integration/stubs
 ```
 
 You can play with the mock using `grpcui` if needed: `grpcui -plaintext  localhost:4770`
@@ -101,6 +102,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
 * [x] Support preloading stubs form JSON
 * [ ] Support specifying port numbers
+* [ ] Support returning errors
 
 ## Development
 

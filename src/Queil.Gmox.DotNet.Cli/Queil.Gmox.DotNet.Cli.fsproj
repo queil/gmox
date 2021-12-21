@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <Import Project="./template/App.fsproj" />
+ 
+  <ItemGroup>
+    <Content Include="include/google/protobuf/*.proto" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Cli.fs" />
@@ -20,6 +24,8 @@
   <ItemGroup>
     <PackageReference Include="Argu" Version="6.1.1" />
     <PackageReference Include="Fake.Core.Process" Version="5.20.4" />
+    <PackageReference Include="Froto.Parser" Version="0.7.2" />
   </ItemGroup>
+
 
 </Project>
