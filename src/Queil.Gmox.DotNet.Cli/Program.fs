@@ -7,6 +7,8 @@ open Queil.Gmox.Infra
 open System.IO
 open System.Reflection
 open Fake.Core
+open Froto.Parser
+open Froto.Parser.Ast
 open System.Diagnostics
 
 type ProjInfo = {
@@ -73,7 +75,7 @@ try
   | Serve opts ->
 
     let asmLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-    let googleIncludesPath = Path.Combine(asmLocation, "include")
+    let googleIncludesPath = Path.Combine(asmLocation, "include") |> Path.GetFullPath
     let opts =
       {
         opts with
@@ -89,7 +91,7 @@ try
 
     let parse proto =
       try
-        Froto.Parser.Parse.loadFromFile proto opts.ImportPaths
+        Parse.loadFromFile proto opts.ImportPaths
       with
       | :? FileNotFoundException as fx ->
         printfn "File '%s' was not found. You may need to set --root" fx.Message
@@ -98,11 +100,10 @@ try
     let allFiles =
       opts.Proto
       |> Seq.collect (parse)
+      |> Seq.filter (fun (_, tree) -> tree |> List.contains(TPackage "google.protobuf") |> not)
       |> Seq.map fst
       |> Seq.distinct
-      |> Seq.filter (fun p -> not <| p.Contains("/include/google/protobuf/"))
       |> Seq.toList
-
 
     let projInfo = {
       Name = "proto-gen"
