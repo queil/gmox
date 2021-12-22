@@ -17,8 +17,6 @@ open System.Reflection
 open System.Text.Json
 open System.Text.Json.Serialization
 open System.Runtime.Serialization
-open System.Threading.Tasks
-open Microsoft.AspNetCore.Builder
 
 let router =
   router {
@@ -28,7 +26,7 @@ let router =
           return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().list())
         })
 
-      post "/test" (fun next ctx -> 
+      post "/test" (fun next ctx ->
         task {
           let! test = ctx.BindJsonAsync<TestData>()
           return! ctx.WriteJsonChunkedAsync(ctx.GetService<StubStore>().findBestMatchFor test)
@@ -46,6 +44,13 @@ let router =
           stub |> ctx.GetService<StubStore>().addOrReplace
           return! Successful.NO_CONTENT next ctx
         })
+      
+      post "/quit" (fun next ctx ->
+        task {
+           ctx.GetService<IHostApplicationLifetime>().StopApplication()
+           return! Successful.NO_CONTENT next ctx
+        }
+      )
     }
 
 type StubPreloader = unit -> unit
@@ -95,7 +100,7 @@ let app (config: AppSettings) =
         Func<IServiceProvider, StubPreloader>(fun f -> fun () ->
           match config.StubPreloadDir with
           | None -> ()
-          | Some stubDir -> 
+          | Some stubDir ->
             let serializer = f.GetRequiredService<Json.ISerializer>()
             let store = f.GetRequiredService<StubStore>()
             Directory.EnumerateFiles(stubDir, "*.json")
@@ -103,7 +108,7 @@ let app (config: AppSettings) =
                let stubs = serializer.Deserialize<Stub []>(File.ReadAllBytes(path))
                for s in stubs do
                  store.addOrReplace s
-            ) 
+            )
         )
       )
     )

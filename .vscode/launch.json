@@ -21,12 +21,16 @@
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/Queil.Gmox.DotNet.Cli/bin/Debug/net6.0/Queil.Gmox.DotNet.Cli.dll",
-      "args": ["--proto",
+      "args": [
+        "serve",
+        "--proto",
         "tests/integration/protos/org/books/list/svc_list.proto",
         "--root",
         "tests/integration/protos",
         "--stub-dir",
-        "tests/integration/stubs"],
+        "tests/integration/stubs"
+        //"version"
+      ],
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "stopAtEntry": false

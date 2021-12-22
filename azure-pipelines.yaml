@@ -13,8 +13,17 @@ variables:
     PKGVER: '0.0.0-dev'
   BuildConfiguration: Release
 
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-latest'
+    mac:
+      imageName: 'macOS-latest'
+    windows:
+      imageName: 'windows-latest'
+
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: $(imageName)
 
 steps:
 - task: UseDotNet@2
@@ -35,6 +44,19 @@ steps:
 #     summaryFileLocation: tests/unit/coverage.xml
 #     codeCoverageTool: cobertura
 
+- task: PowerShell@2
+  inputs:
+    filePath: $(System.DefaultWorkingDirectory)/Run-Tests.ps1
+    pwsh: true
+  displayName: 'Test'
+  condition: succeeded()
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'NUnit'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/testResults.xml'
+    failTaskOnFailedTests: true
+
 - task: DotNetCoreCLI@2
   displayName: 'Pack'
   inputs:
@@ -47,4 +69,4 @@ steps:
 
 - bash: dotnet nuget push -s  https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/*.nupkg
   displayName: 'Push'
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))

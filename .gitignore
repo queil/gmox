@@ -16,3 +16,5 @@ release.sh
 *.DotSettings.user
 *.fs.js
 **/nupkg/
+coverage.xml
+testResults.xml

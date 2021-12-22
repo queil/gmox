@@ -8,6 +8,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <IncludeSymbols>false</IncludeSymbols>
     <IsPackable>true</IsPackable>
+    <VersionPrefix>0.0.0-dev</VersionPrefix>
   </PropertyGroup>
 
   <Import Project="./template/App.fsproj" />

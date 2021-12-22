@@ -44,6 +44,13 @@ let router =
           stub |> ctx.GetService<StubStore>().addOrReplace
           return! Successful.NO_CONTENT next ctx
         })
+      
+      post "/quit" (fun next ctx ->
+        task {
+           ctx.GetService<IHostApplicationLifetime>().StopApplication()
+           return! Successful.NO_CONTENT next ctx
+        }
+      )
     }
 
 type StubPreloader = unit -> unit

@@ -7,6 +7,7 @@ open Queil.Gmox.Infra
 open System.IO
 open System.Reflection
 open Fake.Core
+open System.Diagnostics
 
 type ProjInfo = {
   Name: string
@@ -20,7 +21,7 @@ with member x.OutputAssemblyFullPath () = Path.Combine(x.Path, x.CompileOutputPa
 let createTempProj (info: ProjInfo) =
 
   let csProjPath = Path.Combine(info.Path, $"{info.Name}.csproj")
-  let protosRoot = 
+  let protosRoot =
     match info.Options.ProtoRoot with
     | Some path -> $"ProtoRoot=\"{path}\""
     | None -> ""
@@ -63,12 +64,17 @@ let tempProjPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())
 let dir = Directory.CreateDirectory(tempProjPath)
 
 try
-  let opts =
-    System.Environment.GetCommandLineArgs().[1..]
-    |> parseOptions
-    |> fun opts ->
-      let asmLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-      let googleIncludesPath = Path.Combine(asmLocation, "include")
+  let cmdOpts = System.Environment.GetCommandLineArgs().[1..] |> parseOptions
+
+  match cmdOpts with
+  | Version ->
+    let ver () = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion
+    printfn "%s" (ver ())
+  | Serve opts ->
+
+    let asmLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+    let googleIncludesPath = Path.Combine(asmLocation, "include")
+    let opts =
       {
         opts with
           ImportPaths = [
@@ -81,37 +87,50 @@ try
           ]
       }
 
-  let allFiles = 
-    opts.Proto
-    |> Seq.collect (fun proto -> Froto.Parser.Parse.loadFromFile proto opts.ImportPaths)
-    |> Seq.map fst
-    |> Seq.distinct
-    |> Seq.filter (fun p -> not <| p.Contains("/include/google/protobuf/"))
-    |> Seq.toList
+    let parse proto =
+      try
+        Froto.Parser.Parse.loadFromFile proto opts.ImportPaths
+      with
+      | :? FileNotFoundException as fx ->
+        printfn "File '%s' was not found. You may need to set --root" fx.Message
+        reraise()
 
-  let projInfo = {
-    Name = "proto-gen"
-    Path = tempProjPath
-    CompileOutputPath = "out"
-    AllProtoFiles = allFiles
-    Options = opts
-  }
+    let allFiles =
+      opts.Proto
+      |> Seq.collect (parse)
+      |> Seq.map fst
+      |> Seq.distinct
+      |> Seq.filter (fun p -> not <| p.Contains("/include/google/protobuf/"))
+      |> Seq.toList
 
-  if opts.DebugMode then printfn "%A" projInfo
 
-  projInfo |> createTempProj
-  |> Proc.run
-  |> ignore
+    let projInfo = {
+      Name = "proto-gen"
+      Path = tempProjPath
+      CompileOutputPath = "out"
+      AllProtoFiles = allFiles
+      Options = opts
+    }
 
-  let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
+    if opts.DebugMode then printfn "%A" projInfo
 
-  runGmox (app {
-    Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
-    StubPreloadDir = opts.StubsDir
-  })
+    projInfo |> createTempProj
+    |> Proc.run
+    |> ignore
 
-  if not <| opts.DebugMode then dir.Delete(true)
-with
-  | :? Argu.ArguParseException as p ->
-    printfn "%s" p.Message
-  | e -> printfn "%s" (e.ToString())
+    let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
+
+    if not <| opts.ValidateOnly then
+      runGmox (app {
+        Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
+        StubPreloadDir = opts.StubsDir
+      })
+
+    if not <| opts.DebugMode then dir.Delete(true)
+  with
+    | :? Argu.ArguParseException as p ->
+      printfn "%s" p.Message
+      System.Environment.ExitCode <- 1
+    | e -> 
+      printfn "%s" (e.ToString())
+      System.Environment.ExitCode <- 1
