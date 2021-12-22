@@ -44,6 +44,16 @@ steps:
 #     summaryFileLocation: tests/unit/coverage.xml
 #     codeCoverageTool: cobertura
 
+- task: DotNetCoreCLI@2
+  displayName: 'Pack'
+  inputs:
+    command: 'pack'
+    packagesToPack: 'src/**/*.fsproj'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: PKGVER
+    verbosityPack: 'Normal'
+  condition: succeeded() #TODO: enable later -> and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
 - task: PowerShell@2
   inputs:
     filePath: $(System.DefaultWorkingDirectory)/Run-Tests.ps1
@@ -56,16 +66,6 @@ steps:
     testResultsFormat: 'NUnit'
     testResultsFiles: '$(System.DefaultWorkingDirectory)/testResults.xml'
     failTaskOnFailedTests: true
-
-- task: DotNetCoreCLI@2
-  displayName: 'Pack'
-  inputs:
-    command: 'pack'
-    packagesToPack: 'src/**/*.fsproj'
-    versioningScheme: 'byEnvVar'
-    versionEnvVar: PKGVER
-    verbosityPack: 'Normal'
-  condition: succeeded() #TODO: enable later -> and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
 - bash: dotnet nuget push -s  https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/*.nupkg
   displayName: 'Push'
