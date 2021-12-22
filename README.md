@@ -60,7 +60,7 @@ Run `gmox`:
 
 ```bash
 # assuming cd = root of this repo
-gmox --proto tests/integration/protos/org/books/list/svc_list.proto --root tests/integration/protos --stub-dir tests/integration/stubs
+gmox serve --proto tests/integration/protos/org/books/list/svc_list.proto --root tests/integration/protos --stub-dir tests/integration/stubs
 ```
 
 You can play with the mock using `grpcui` if needed: `grpcui -plaintext  localhost:4770`
