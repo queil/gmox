@@ -127,7 +127,17 @@ try
         StubPreloadDir = opts.StubsDir
       })
 
-    if not <| opts.DebugMode then dir.Delete(true)
+    let rec safeDelete (path:DirectoryInfo) =
+      path.EnumerateFiles()
+      |> Seq.iter (fun f ->
+         f.Attributes <- FileAttributes.Normal
+         f.Delete()
+      )
+      path.EnumerateDirectories()
+      |> Seq.iter (safeDelete)
+      path.Delete(true)
+
+    if not <| opts.DebugMode then safeDelete dir
   with
     | :? Argu.ArguParseException as p ->
       printfn "%s" p.Message
