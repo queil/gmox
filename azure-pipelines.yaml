@@ -52,7 +52,7 @@ steps:
     versioningScheme: 'byEnvVar'
     versionEnvVar: PKGVER
     verbosityPack: 'Normal'
-    buildProperties: "VersionPrefix=$PKGVER"
+    buildProperties: VersionPrefix=$(PKGVER)
   condition: succeeded()
 
 - task: PowerShell@2
