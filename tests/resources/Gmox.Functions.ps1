@@ -1,7 +1,7 @@
 $IsCiBuild = $null -ne $env:TF_BUILD
 $SrcPath = $IsCiBuild ? $env:SRC_PATH : "src/Queil.Gmox.DotNet.Cli"
 $NuGetSource = $IsCiBuild ? $env:BUILD_ARTIFACTSTAGINGDIRECTORY : "$SrcPath/nupkg/"
-$PkgVer = $IsCiBuild ? $env:PKGVER : (dotnet run --project $SrcPath -- version 2>&1)
+$PkgVer = $IsCiBuild ? $env:PKGVER : "0.0.0-dev"
 $ManifestDir = $TestDrive
 $ManifestFilePath = "$ManifestDir/.config/dotnet-tools.json"
 
