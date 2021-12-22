@@ -5,6 +5,8 @@ $PkgVer = $IsCiBuild ? $env:PKGVER : (dotnet run --project $SrcPath -- version 2
 $ManifestDir = $TestDrive
 $ManifestFilePath = "$ManifestDir/.config/dotnet-tools.json"
 
+ls -la $NuGetSource
+
 function Install-Gmox {
 
   param(
