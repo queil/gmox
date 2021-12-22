@@ -135,6 +135,7 @@ try
       )
       path.EnumerateDirectories()
       |> Seq.iter (safeDelete)
+      path.Attributes <- FileAttributes.Normal
       path.Delete(true)
 
     if not <| opts.DebugMode then safeDelete dir
