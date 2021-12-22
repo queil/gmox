@@ -16,14 +16,14 @@ Describe 'Gmox' {
     Describe 'mocking service' {
       It 'should work if pwd is proto root' {
 
-        switch ($true) {
-          $IsWindows {
-            gmox serve --validate-only --root . --proto .\org\books\list\svc_list.proto | Write-Host
+        $ProtoPath =
+          switch ($true) {
+            $IsWindows { ".\org\books\list\svc_list.proto" }
+            default { "./org/books/list/svc_list.proto" }
           }
-          default {
-            gmox serve --validate-only --root . --proto ./org/books/list/svc_list.proto | Write-Host
-          }
-        }
+
+        $out = gmox serve --validate-only --root . --proto $ProtoPath
+        $? | Should -BeTrue -Because "Error: $out"
       }
     }
 
