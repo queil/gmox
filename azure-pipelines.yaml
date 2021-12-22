@@ -52,7 +52,8 @@ steps:
     versioningScheme: 'byEnvVar'
     versionEnvVar: PKGVER
     verbosityPack: 'Normal'
-  condition: succeeded() #TODO: enable later -> and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+    buildProperties: "VersionPrefix=$PKGVER"
+  condition: succeeded()
 
 - task: PowerShell@2
   inputs:
