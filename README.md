@@ -103,6 +103,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 * [x] Support preloading stubs form JSON
 * [ ] Support specifying port numbers
 * [ ] Support returning errors
+* [ ] CI: make push stage only run after the whole test matrix passes
 
 ## Development
 

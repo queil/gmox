@@ -5,6 +5,7 @@ open Queil.Gmox.Core.Types
 open System.Text.Json.Nodes
 open System.Reflection
 
+
 [<Tests>]
 let tests =
   
@@ -26,7 +27,14 @@ let tests =
               }""")
         }
 
-      let result = (store ()).findBestMatchFor testData
+      let store = store ()
+      store.addOrReplace {
+        Method = "test/method"
+        Match = Exact (JsonNode.Parse("{}"))
+        Return = Output(Data = JsonNode.Parse("{}"))
+      }
+
+      let result = store.findBestMatchFor testData
       
       $"Expected stub configuration for {testData.Method}" |> Expect.isSome result
   ]

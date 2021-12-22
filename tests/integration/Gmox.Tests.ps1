@@ -1,6 +1,6 @@
 Describe 'Gmox' {
 
-  BeforeAll { . "$PSScriptRoot/tests/resources/Gmox.Functions.ps1" }
+  BeforeAll { . "$PSScriptRoot/Gmox.Functions.ps1" }
 
   Context '-- as a global tool' -Tag 'global' {
 
@@ -8,7 +8,7 @@ Describe 'Gmox' {
 
     BeforeEach {
 
-      Copy-Item "$PSScriptRoot/tests/integration/protos/" -Recurse TestDrive:/protos
+      Copy-Item "$PSScriptRoot/../resources/protos/" -Recurse TestDrive:/protos
       Push-Location
       Set-Location TestDrive:/protos
     }

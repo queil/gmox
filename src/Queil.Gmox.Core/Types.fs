@@ -61,7 +61,7 @@ module Types =
     | :? JsonObject as x-> JObj(x)
     | _ -> failwithf "JsonNode '%s' is not supported" (n.ToJsonString())
   
-  type Mode = Exact | Partial | Matches 
+  type internal Mode = Exact | Partial | Matches 
 
   type StubStore(serialize: Serialize, getGrpcMethod: GetGrpcMethod) =
     let stubs = Stubs()
