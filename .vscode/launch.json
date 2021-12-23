@@ -24,13 +24,24 @@
       "args": [
         "serve",
         "--proto",
-        "tests/integration/protos/org/books/list/svc_list.proto",
+        "tests/resources/protos/org/books/list/svc_list.proto",
         "--root",
-        "tests/integration/protos",
+        "tests/resources/protos",
         "--stub-dir",
-        "tests/integration/stubs"
+        "tests/resources/stubs"
         //"version"
       ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (Unit Tests)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/tests/unit/Queil.Gmox.Core.Tests.Unit/bin/Debug/net6.0/Queil.Gmox.Core.Tests.Unit.dll",
+      "args": [],
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "stopAtEntry": false
