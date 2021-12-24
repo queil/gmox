@@ -86,8 +86,7 @@ module Json =
                 methodName <- cp.GetString()
               else
                 cp.Skip()
-              cp.Read() |> ignore
-          methodName
+          if methodName <> "" then methodName else raise (JsonException($"Missing property: '{methodPropertyName}'"))
         | _ -> raise (JsonException())
        
       override this.Read(reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =

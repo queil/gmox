@@ -32,12 +32,12 @@ module Types =
   and Rule =
    | Exact of JsonNode
    | Partial of JsonNode
-   | Matches of JsonNode
+   | Regexp of JsonNode
    member x.Matcher : JsonNode =
      match x with
      | Exact m -> m
      | Partial m -> m
-     | Matches m -> m
+     | Regexp m -> m
 
   and Output = | Data of IMessage | Error of IMessage
   type GetGrpcMethod = string -> MethodInfo
@@ -84,7 +84,7 @@ module Types =
           match expected with
           | Rule.Exact n -> Exact, n
           | Rule.Partial n -> Partial, n
-          | Rule.Matches n -> Matches, n
+          | Rule.Regexp n -> Matches, n
 
         let rec next (xp:JsonNode) (ac:JsonNode) =
           match mode, xp, ac with

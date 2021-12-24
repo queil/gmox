@@ -16,5 +16,23 @@
         ]
        }
     }
+  },
+  {
+    "match": {
+      "regexp" : {
+        "author": "Eric .*"
+      }
+    },
+    "return" : {
+      "data": {
+        "books": [
+          {
+            "title": "Nineteen Eighty-Four",
+            "author": "Eric Arthur Blair"
+          }
+        ]
+      }
+    },
+    "method": "org.books.list.ListService/ListBooks"
   }
 ]
