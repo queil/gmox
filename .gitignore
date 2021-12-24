@@ -1,7 +1,7 @@
 .fable/
 .fake/
 .farmer/
-.idea/
+#.idea/
 .ionide/
 .vs/
 deploy/

@@ -1,6 +1,7 @@
-<Project>
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
     <Description>Gmox gRPC Mock Server Dotnet Cli Tool</Description>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>gmox</ToolCommandName>
@@ -10,8 +11,6 @@
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
-  <Import Project="./template/App.fsproj" />
- 
   <ItemGroup>
     <Content Include="include/google/protobuf/*.proto" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
@@ -27,5 +26,8 @@
     <PackageReference Include="Froto.Parser" Version="0.7.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Queil.Gmox.Server\Queil.Gmox.Server.fsproj" />
+  </ItemGroup>
 
 </Project>

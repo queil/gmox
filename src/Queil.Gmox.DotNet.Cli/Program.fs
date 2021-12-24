@@ -1,15 +1,15 @@
 module Queil.Gmox.Program
 
-open Queil.Gmox.App
-open Queil.Gmox.CliArgs
-open Queil.Gmox.Core
-open Queil.Gmox.Infra
-open System.IO
-open System.Reflection
 open Fake.Core
 open Froto.Parser
 open Froto.Parser.Ast
+open Queil.Gmox.Core
+open Queil.Gmox.CliArgs
+open Queil.Gmox.Server
+open Saturn
+open System.IO
 open System.Diagnostics
+open System.Reflection
 
 type ProjInfo = {
   Name: string
@@ -122,11 +122,14 @@ try
     let asm = Assembly.LoadFile(projInfo.OutputAssemblyFullPath ())
 
     if not <| opts.ValidateOnly then
-      runGmox (app {
-        Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
-        StubPreloadDir = opts.StubsDir
-      })
-
+      let app = 
+        application {
+          use_gmox {
+            Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
+            StubPreloadDir = opts.StubsDir
+          }
+        }
+      run app
   with
     | :? Argu.ArguParseException as p ->
       printfn "%s" p.Message

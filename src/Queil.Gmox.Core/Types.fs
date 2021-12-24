@@ -39,21 +39,16 @@ module Types =
      | Partial m -> m
      | Matches m -> m
 
-  and Output() =
-    member val Data = obj() with get, set
-    member val Error = "" with get, set
-    member val internal Msg = (WellKnownTypes.Empty() :> IMessage) with get, set
-
-  type Stubs = HashSet<Stub>
+  and Output = | Data of IMessage | Error of IMessage
+  type GetGrpcMethod = string -> MethodInfo
+  type ResolveResponseType = string -> Type
+  type StubPreloader = unit -> unit
   
   type TestData = {
     Method: string
     Data: JsonNode
   }
 
-  type Serialize = obj -> string
-  type GetGrpcMethod = Stub -> MethodInfo
-  
   let (|JArr|JObj|JVal|) (n:JsonNode) =
     match n with
     | :? JsonArray as x -> JArr(x)
@@ -63,43 +58,23 @@ module Types =
   
   type internal Mode = Exact | Partial | Matches 
 
-  type StubStore(serialize: Serialize, getGrpcMethod: GetGrpcMethod) =
-    let stubs = Stubs()
-
-    let getResponseType (m:MethodInfo) =
-      let returnType = m.ReturnType
-      if (typeof<Task<_>>).GetGenericTypeDefinition() = returnType.GetGenericTypeDefinition()
-      then returnType.GenericTypeArguments.[0]
-      else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
-    
-    let parserFor (typ:Type) =
-      let parser =
-        typeof<JsonParser>
-          .GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
-          .GetGenericMethodDefinition()
-          .MakeGenericMethod(typ)
-      
-      fun (data:string) -> parser.Invoke(JsonParser.Default, [|data|]) :?> IMessage
-
+  type StubStore(getResponseType: string -> Type) =
+    let stubs = HashSet<Stub>()
     member x.resolveResponse (request:IMessage) (context:ServerCallContext) (mb:MethodBase) =
       let method = context.Method.[1..]
       let maybeStub = x.findBestMatchFor {Method = method; Data = JsonNode.Parse(JsonFormatter.Default.Format(request)) }
-      
       let response =
         match maybeStub with
-        | None -> 
-          let default' () = Activator.CreateInstance(getResponseType (mb :?> MethodInfo)) :?> IMessage
-          default' ()
-        | Some s -> s.Return.Msg
-
+        | None ->
+           let default' () = Activator.CreateInstance(getResponseType method) :?> IMessage
+           default' ()
+        | Some s ->
+           match s.Return with
+           | Data d -> d
+           | Error e -> e
       Task.FromResult(response)
-
     member _.addOrReplace (s:Stub) =
-      let responseType = s |> (getGrpcMethod >> getResponseType)
-      let parse = parserFor responseType
-      s.Return.Msg <- s.Return.Data |> serialize |> parse
       stubs.Add s |> ignore
-
     member _.list () = stubs |> List.ofSeq
     member _.clear () = stubs.Clear()
     member _.findBestMatchFor (test:TestData) : Stub option =

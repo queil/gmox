@@ -1,4 +1,4 @@
-namespace Queil.Gmox.Infra
+namespace Queil.Gmox.Server
 
 open System
 open System.Reflection

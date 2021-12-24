@@ -21,5 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Queil.Gmox.Core\Queil.Gmox.Core.fsproj" />
+    <ProjectReference Include="..\..\resources\Org.Books\Org.Books.csproj" />
   </ItemGroup>
 </Project>

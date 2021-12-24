@@ -4,18 +4,20 @@ open Expecto
 open Queil.Gmox.Core.Types
 open System.Text.Json.Nodes
 open System.Reflection
+open Org.Books
+open Org.Books.List
 
 
 [<Tests>]
 let tests =
-  
-  let store () = StubStore((fun a -> ""), (fun x -> Unchecked.defaultof<MethodInfo>))
+
+  let store () = StubStore( (fun _ -> typeof<List.ListService.ListServiceBase>.GetMethod("ListBooks") ))
 
   testList "when matching stubs" [
     testCase "should match on exact" <| fun _ ->
       
       let testData = {
-          Method = "test/method"
+          Method = "org.books.list.ListService/ListBooks"
           Data = JsonNode.Parse(
             """{
                  "this": {
@@ -29,10 +31,12 @@ let tests =
 
       let store = store ()
       store.addOrReplace {
-        Method = "test/method"
+        Method = "org.books.list.ListService/ListBooks"
         Match = Exact (JsonNode.Parse("{}"))
-        Return = Output(Data = JsonNode.Parse("{}"))
+        Return = { Data = ListResponse() }
       }
+
+//could we deserialize Output data as json node and use Json property instead serialize
 
       let result = store.findBestMatchFor testData
       
