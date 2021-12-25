@@ -36,12 +36,12 @@ steps:
   displayName: 'Test'
   inputs:
     command: test
-    projects: tests/unit/Queil.Gmox.Core.Tests.Unit
+    projects: tests/unit/**
     arguments: '-c Release /p:AltCover=true /p:AltCoverCobertura=coverage.xml /p:AltCoverAssemblyFilter="(.*)(?<!Queil.Gmox.Core)$"'
 
 - task: PublishCodeCoverageResults@1
   inputs:
-    summaryFileLocation: tests/unit/coverage.xml
+    summaryFileLocation: tests/unit/**/coverage.xml
     codeCoverageTool: cobertura
 
 - task: DotNetCoreCLI@2
