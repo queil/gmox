@@ -29,6 +29,19 @@
           "Grpc.Reflection": "2.41.0"
         }
       },
+      "Queil.Gmox.Core": {
+        "type": "Direct",
+        "requested": "[0.2.0-alpha.*, )",
+        "resolved": "0.2.0-alpha.5",
+        "contentHash": "orq3uIRuYvwcnpOva6TASTqA0A4es4J09bIAIJE/izcFRGom6GG3zgDMKh/gxmcVssRxxMulB8qC8hZhdlerIw==",
+        "dependencies": {
+          "FSharp.Core": "6.0.1",
+          "Google.Protobuf": "3.19.1",
+          "Grpc.Core": "2.42.0",
+          "System.Reflection.Emit": "4.7.0",
+          "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
+        }
+      },
       "Saturn": {
         "type": "Direct",
         "requested": "[0.15.0, )",
@@ -359,16 +372,6 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Threading.Tasks.Extensions": "4.4.0",
           "System.ValueTuple": "4.4.0"
-        }
-      },
-      "queil.gmox.core": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "6.0.1",
-          "Google.Protobuf": "3.19.1",
-          "Grpc.Core": "2.42.0",
-          "System.Reflection.Emit": "4.7.0",
-          "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
         }
       }
     }

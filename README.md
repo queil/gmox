@@ -37,10 +37,10 @@ Stubs can be configured using the following rules:
 
 * `exact` - matches if the request is exactly the same as the stub input
 * `partial` - matches if the stub input data is a sub-tree of the request data
-* `regexp` - like `partial` but values in requests can be matched with a regular expression
+* `regex` - like `partial` but values in requests can be matched with a regular expression
 
 Whenever a gRPC call is received the request data is evaluated against the available stub configurations.
-Multiple stubs can be configured for a gRPC method and they're evaluated from the most (`exact`) to the least (`regexp`) specific.
+Multiple stubs can be configured for a gRPC method and they're evaluated from the most (`exact`) to the least (`regex`) specific.
 The first match wins. 
 
 ## Usage/deployment modes
@@ -119,11 +119,4 @@ Once the template is installed it can be refreshed by:
 
 ```bash
 dotnet new --debug:rebuildcache
-```
-
-### Regenerate CLI tool from template
-
-```bash
-cd src/Queil.Gmox.DotNet.Cli/template
-dotnet new gmox --name App -nu ignore -amt ignore -s=true --force
 ```

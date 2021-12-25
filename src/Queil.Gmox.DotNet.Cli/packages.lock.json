@@ -43,6 +43,19 @@
         "resolved": "6.0.1",
         "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       },
+      "Queil.Gmox.Server": {
+        "type": "Direct",
+        "requested": "[0.2.0-alpha.5, )",
+        "resolved": "0.2.0-alpha.5",
+        "contentHash": "WhIniPQV8+neluRPOYfiWpUiQuZ2jKLD6QF71OPp5bV+BaAtlMJGNfbK97J9mP4tXZVOuPFw0TPz+DhVewR0KQ==",
+        "dependencies": {
+          "FSharp.Core": "6.0.1",
+          "FSharp.SystemTextJson": "0.17.4",
+          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
+          "Queil.Gmox.Core": "0.2.0-alpha.5",
+          "Saturn": "0.15.0"
+        }
+      },
       "Fake.Core.Context": {
         "type": "Transitive",
         "resolved": "5.20.4",
@@ -343,6 +356,18 @@
         "dependencies": {
           "FSharp.Core": "4.6.2",
           "System.Threading.Tasks.Extensions": "4.5.4"
+        }
+      },
+      "Queil.Gmox.Core": {
+        "type": "Transitive",
+        "resolved": "0.2.0-alpha.5",
+        "contentHash": "orq3uIRuYvwcnpOva6TASTqA0A4es4J09bIAIJE/izcFRGom6GG3zgDMKh/gxmcVssRxxMulB8qC8hZhdlerIw==",
+        "dependencies": {
+          "FSharp.Core": "6.0.1",
+          "Google.Protobuf": "3.19.1",
+          "Grpc.Core": "2.42.0",
+          "System.Reflection.Emit": "4.7.0",
+          "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -1234,26 +1259,6 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Threading.Tasks.Extensions": "4.4.0",
           "System.ValueTuple": "4.4.0"
-        }
-      },
-      "queil.gmox.core": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "6.0.1",
-          "Google.Protobuf": "3.19.1",
-          "Grpc.Core": "2.42.0",
-          "System.Reflection.Emit": "4.7.0",
-          "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
-        }
-      },
-      "queil.gmox.server": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "6.0.1",
-          "FSharp.SystemTextJson": "0.17.4",
-          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
-          "Queil.Gmox.Core": "1.0.0",
-          "Saturn": "0.15.0"
         }
       }
     }

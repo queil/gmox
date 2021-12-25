@@ -101,17 +101,17 @@ module Json =
 
   type StubArrayConverter(converter: StubConverter) =
     inherit JsonConverter<Stub []>()
-    static member private Arr (acc: Stub list, reader:byref<Utf8JsonReader>, options: JsonSerializerOptions, converter: StubConverter) =
+    static let rec arr (acc: Stub list, reader:byref<Utf8JsonReader>, options: JsonSerializerOptions, converter: StubConverter) =
       match &reader with
       | JArrayEnd _ -> acc
       | _ ->
         let elem = converter.Read(&reader, typeof<Stub>, options)
-        StubArrayConverter.Arr((elem::acc), &reader, options, converter)
+        arr((elem::acc), &reader, options, converter)
       
     override this.Read(reader, _, options) =
       match &reader with
       | Expect JsonTokenType.StartArray _ ->
-        (StubArrayConverter.Arr([], &reader, options, converter) |> List.rev |> List.toArray)            
+        (arr([], &reader, options, converter) |> List.rev |> List.toArray)            
         
     override this.Write(writer, value, options) =
       writer.WriteStartArray()

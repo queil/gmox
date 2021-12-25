@@ -8,8 +8,7 @@
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
-    <!--#if (!standalone)-->
     <PackageReference Include="Grpc.HealthCheck" Version="*" />
-    <!--#endif-->
+    <PackageReference Include="Queil.Gmox.Server" Version="0.2.0-alpha.5" />
   </ItemGroup>
 </Project>

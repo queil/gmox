@@ -19,7 +19,7 @@
   },
   {
     "match": {
-      "regexp" : {
+      "regex" : {
         "author": "Eric .*"
       }
     },
