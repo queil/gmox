@@ -81,7 +81,7 @@ Usage: `dotnet new gmox -h`
 
 ### Docker image
 
-Both the CLI tool and a server generated from the template may be packaged as Docker image and used in scenarios where having .NET SDK is not desirable. There are no official images yet.
+Both the CLI tool and a server generated from the template may be packaged as Docker image and used in scenarios where having .NET SDK is not desirable.
 
 ## TODO
 
