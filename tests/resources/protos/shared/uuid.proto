@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package org.shared;
+
+message Uuid 
+{
+    string value = 1;
+}

@@ -1,7 +1,7 @@
 .fable/
 .fake/
 .farmer/
-.idea/
+#.idea/
 .ionide/
 .vs/
 deploy/
@@ -16,3 +16,6 @@ release.sh
 *.DotSettings.user
 *.fs.js
 **/nupkg/
+coverage.xml
+testResults.xml
+grpc_csharp_plugin

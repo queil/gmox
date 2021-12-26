@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package org.books.list;
+
+import "google/protobuf/timestamp.proto";
+import "org/books/shared/msg_book.proto";
+
+message ListRequest
+{
+    string author = 1;
+}
+
+message ListResponse
+{
+    repeated org.books.shared.Book books = 1;
+    google.protobuf.Timestamp validUntil = 2;
+}

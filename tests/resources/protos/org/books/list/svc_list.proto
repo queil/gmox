@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package org.books.list;
+
+import "org/books/list/msg_list.proto";
+
+service ListService
+{
+    rpc ListBooks (ListRequest) returns (ListResponse) {}
+}

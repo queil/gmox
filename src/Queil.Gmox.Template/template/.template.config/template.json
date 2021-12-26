@@ -22,12 +22,6 @@
       "description": "One of the types from the referenced NuGet so it can be statically referenced in code. All the gRPC services from that type's assembly get auto-discovered",
       "replaces": "Grpc.Health.V1.Health",
       "isRequired": true
-    },
-    "standalone": {
-      "type": "parameter",
-      "description": "Internal-only. If set to true the template creates an empty mock server.",
-      "defaultValue": "false",
-      "isRequired": false
     }
   }
 }

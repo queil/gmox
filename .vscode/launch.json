@@ -5,11 +5,42 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console)",
+      "name": ".NET Core Launch (Template)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/src/Queil.Gmox.Template/template/bin/Debug/net6.0/Queil.Gmox.Template.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (CLI)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Queil.Gmox.DotNet.Cli/bin/Debug/net6.0/Queil.Gmox.DotNet.Cli.dll",
+      "args": [
+        "serve",
+        "--proto",
+        "tests/resources/protos/org/books/list/svc_list.proto",
+        "--root",
+        "tests/resources/protos",
+        "--stub-dir",
+        "tests/resources/stubs"
+        //"version"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    },
+    {
+      "name": ".NET Core Launch (Unit Tests)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/tests/unit/Queil.Gmox.Core.Tests.Unit/bin/Debug/net6.0/Queil.Gmox.Core.Tests.Unit.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",

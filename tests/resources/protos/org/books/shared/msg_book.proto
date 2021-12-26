@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package org.books.shared;
+
+import "shared/decimal.proto";
+
+message Book
+{
+  string title = 1;
+  org.shared.Decimal price = 2;
+  repeated string tags = 3;
+  string author = 4;
+}

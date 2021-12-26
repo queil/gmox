@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package org.shared;
+
+message Decimal 
+{
+    uint64 lo = 1; // the first 64 bits of the underlying value
+    uint32 hi = 2; // the last 32 bis of the underlying value
+    sint32 sign_scale = 3; // the number of decimal digits, and the sign
+}
