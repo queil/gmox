@@ -1,6 +1,6 @@
 # Gmox ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/queil/gmox/4) [![Build Status](https://dev.azure.com/queil/gmox/_apis/build/status/queil.gmox?branchName=main)](https://dev.azure.com/queil/gmox/_build/latest?definitionId=4&branchName=main) [![NuGet Badge](https://buildstats.info/nuget/Queil.Gmox.Dotnet.Cli?includePreReleases=true)](https://www.nuget.org/packages/Queil.Gmox.Dotnet.Cli)
 
-.NET-friendly gRPC mock server inspired by [gripmock](https://github.com/tokopedia/gripmock) powered by [Saturn](https://saturnframework.org/) and F#. It comes both as a dotnet tool and a dotnet template depending on the [use case](#Usage).
+.NET-friendly gRPC mock server inspired by [gripmock](https://github.com/tokopedia/gripmock) powered by [Saturn](https://saturnframework.org/) and F#. It comes both as a dotnet tool and a dotnet template depending on the [use case](#usage).
 
 Gmox exposes two endpoints:
 
@@ -11,6 +11,22 @@ Gmox exposes two endpoints:
   * `POST` `/test` - test if the provided data matches any stub
   * `POST` `/clear` - deletes all the stub configurations
   * `POST` `/quit` - gracefully terminates the server
+
+## Quick start
+
+Install the tool:
+```bash
+dotnet tool install --global Queil.Gmox.DotNet.Cli
+```
+
+Run the server:
+
+```bash
+# assuming cd = root of this repo
+gmox serve --proto tests/integration/protos/org/books/list/svc_list.proto --root tests/integration/protos --stub-dir tests/integration/stubs
+```
+
+You can also use Gmox as a [dotnet template](#dotnet-template).
 
 ## Stubbing configuration
 
