@@ -1,4 +1,4 @@
-# Gmox
+# Gmox ![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/queil/gmox/4) [![Build Status](https://dev.azure.com/queil/gmox/_apis/build/status/queil.gmox?branchName=main)](https://dev.azure.com/queil/gmox/_build/latest?definitionId=4&branchName=main) [![NuGet Badge](https://buildstats.info/nuget/Queil.Gmox.Dotnet.Cli?includePreReleases=true)](https://www.nuget.org/packages/Queil.Gmox.Dotnet.Cli)
 
 .NET-friendly gRPC mocks server inspired by [gripmock](https://github.com/tokopedia/gripmock) powered by [Saturn](https://saturnframework.org/) and F#. It comes both as a dotnet tool and a dotnet template depending on the [use case](#Usage).
 
