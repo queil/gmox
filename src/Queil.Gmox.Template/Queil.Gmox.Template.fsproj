@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageType>Template</PackageType>
@@ -18,7 +18,7 @@
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="template\*" />
+    <Content Include="template\**\*" Exclude="template\**\bin\**;template\**\obj\**" />
     <Compile Remove="**\*" />
   </ItemGroup>
 </Project>
