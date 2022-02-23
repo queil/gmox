@@ -44,7 +44,6 @@ module Types =
   and StubMethod = {
     Method: string
   }
-  and StubReturn = { Return: Output }
   type GetGrpcMethod = string -> MethodInfo
   type ResolveResponseType = string -> Type
   type StubPreloader = unit -> unit
