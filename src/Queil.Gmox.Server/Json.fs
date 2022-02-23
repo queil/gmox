@@ -1,10 +1,10 @@
 namespace Queil.Gmox.Server
 
+open System.Text.Json.Nodes
 open System.Text.Json.Serialization
 open System.Text.Json
 open Google.Protobuf
 open Google.Protobuf.Reflection
-open Microsoft.AspNetCore.Http
 open Queil.Gmox.Core.Types
 
 module Json =
@@ -25,16 +25,29 @@ module Json =
     | t when t = tokenType -> raise (JsonException())
     | _ -> Unless
 
+  type GetDescriptorByTypeName = string -> MessageDescriptor
+  type AddOrReplaceStub = JsonNode -> unit
+
   type JsonSerializerOptions with
     member this.TryGetConverter<'a when 'a :> JsonConverter>() =
       this.Converters |> Seq.tryFind (fun c -> c.GetType() = typeof<'a>) |> Option.map (fun x -> x :?> 'a)
 
-  type ProtoMessageConverter(ctxAccessor: IHttpContextAccessor) =
+  type ResponseDescriptorHolder(descriptor:MessageDescriptor) =
+    inherit JsonConverter<bool>()
+      member val ResponseDescriptor = descriptor
+      override _.CanConvert(_:System.Type) = false
+      override this.Read(_, _, _) = failwith "This should never be called"
+      override this.Write(_, _, _) = failwith "This should never be called"
+
+  type ProtoMessageConverter() =
     inherit JsonConverter<IMessage>()
-    override _.Read(reader: byref<Utf8JsonReader> , _, _:JsonSerializerOptions) : IMessage =
+    override _.Read(reader: byref<Utf8JsonReader> , _, options:JsonSerializerOptions) : IMessage =
 
       let str = JsonDocument.ParseValue(&reader).RootElement.GetRawText()
-      let descriptor = ctxAccessor.HttpContext.Items["response-descriptor"] :?> MessageDescriptor
+      let descriptor =
+        match options.TryGetConverter<ResponseDescriptorHolder>() with
+        | None -> failwithf $"Expected %s{nameof(ResponseDescriptorHolder)}"
+        | Some h -> h.ResponseDescriptor
       JsonParser.Default.Parse(str, descriptor)
 
     override _.Write(writer: Utf8JsonWriter, msg: IMessage, _:JsonSerializerOptions) : unit =
@@ -48,23 +61,3 @@ module Json =
         
       override this.Write(writer, value, options) =
         base.Write(writer, value, options)
-
-  type StubArrayConverter(converter: StubConverter) =
-    inherit JsonConverter<Stub []>()
-    static let rec arr (acc: Stub list, reader:byref<Utf8JsonReader>, options: JsonSerializerOptions, converter: StubConverter) =
-      match &reader with
-      | JArrayEnd _ -> acc
-      | _ ->
-        let elem = converter.Read(&reader, typeof<Stub>, options)
-        arr((elem::acc), &reader, options, converter)
-      
-    override this.Read(reader, _, options) =
-      match &reader with
-      | Expect JsonTokenType.StartArray _ ->
-        (arr([], &reader, options, converter) |> List.rev |> List.toArray)            
-        
-    override this.Write(writer, value, options) =
-      writer.WriteStartArray()
-      for v in value do
-        converter.Write(writer, v, options)
-      writer.WriteEndArray()

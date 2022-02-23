@@ -10,17 +10,17 @@
       },
       "Google.Protobuf": {
         "type": "Direct",
-        "requested": "[3.19.1, )",
-        "resolved": "3.19.1",
-        "contentHash": "M6yun2BPdHkBjD3V14muZSt72azWHRJEx88ME2TyyH2+/ww6R3hIptjBFQQtO6pmkfLXW/NGQ4hADWSa9AmK2A=="
+        "requested": "[3.19.4, )",
+        "resolved": "3.19.4",
+        "contentHash": "fd07/ykL4O4FhqrZIELm5lmiyOHfdPg9+o+hWr6tcfRdS7tHXnImg/2wtogLzlW2eEmr0J7j6ZrZvaWOLiJbxQ=="
       },
       "Grpc.Core": {
         "type": "Direct",
-        "requested": "[2.42.0, )",
-        "resolved": "2.42.0",
-        "contentHash": "TSTkennjPAlg1S5irp2DdOpwqEcCbXE6q2y44n/yWYc8ngUvP5nX4lczrrtuyYKOyIAkmlthVLka3uV4k/np5Q==",
+        "requested": "[2.44.0, )",
+        "resolved": "2.44.0",
+        "contentHash": "H2rTNePSYeEqUgBBqiE5KZ/yOX7jEtETjWjv4gGtnYxrlpZ79VAHe+4KtZAnt2KJMiGvqTm7eo1SPk+QpiPfaw==",
         "dependencies": {
-          "Grpc.Core.Api": "2.42.0",
+          "Grpc.Core.Api": "2.44.0",
           "System.Memory": "4.5.3"
         }
       },
@@ -41,8 +41,8 @@
       },
       "Grpc.Core.Api": {
         "type": "Transitive",
-        "resolved": "2.42.0",
-        "contentHash": "12ciAZrp8orzYFZcruvzshhMEbbD4CAFOe9an1Fa4/c5ZrCtqUjWVPa1Dpk/1Pnv5E1KTeIHPuOtPTkpMLOCoQ==",
+        "resolved": "2.44.0",
+        "contentHash": "FBfPMvKwT8q98T8lWa5z6nBMLdH/Mmo5g4yyYYMvbXLWDzo4beqa7CUU5QH3PKvo2X6/b+UAZ2IymXlrYG3IXg==",
         "dependencies": {
           "System.Memory": "4.5.3"
         }

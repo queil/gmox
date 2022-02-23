@@ -43,19 +43,6 @@
         "resolved": "6.0.1",
         "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
       },
-      "Queil.Gmox.Server": {
-        "type": "Direct",
-        "requested": "[0.*, )",
-        "resolved": "0.2.1",
-        "contentHash": "bg6sqYzsVB4yKTr9R/qO/eQDVj5dAVXvhnBN48NYPs2Tsu4rXAz+SeIQ2YYvItT6BYGSndrz7IGJKrUMJaPF+Q==",
-        "dependencies": {
-          "FSharp.Core": "6.0.1",
-          "FSharp.SystemTextJson": "0.17.4",
-          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
-          "Queil.Gmox.Core": "0.2.0-alpha.5",
-          "Saturn": "0.15.0"
-        }
-      },
       "Fake.Core.Context": {
         "type": "Transitive",
         "resolved": "5.20.4",
@@ -360,8 +347,8 @@
       },
       "Queil.Gmox.Core": {
         "type": "Transitive",
-        "resolved": "0.2.0-alpha.5",
-        "contentHash": "orq3uIRuYvwcnpOva6TASTqA0A4es4J09bIAIJE/izcFRGom6GG3zgDMKh/gxmcVssRxxMulB8qC8hZhdlerIw==",
+        "resolved": "0.3.0-alpha.1",
+        "contentHash": "gG6/icoNVD23hvrN9ZftOnYoaqwbYa3lTIbufilMnW3ae0zdDTt3ICUQXmYX2qJ75by0QwyLeY5zK76Up1vg0Q==",
         "dependencies": {
           "FSharp.Core": "6.0.1",
           "Google.Protobuf": "3.19.1",
@@ -1259,6 +1246,16 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Threading.Tasks.Extensions": "4.4.0",
           "System.ValueTuple": "4.4.0"
+        }
+      },
+      "queil.gmox.server": {
+        "type": "Project",
+        "dependencies": {
+          "FSharp.Core": "6.0.1",
+          "FSharp.SystemTextJson": "0.17.4",
+          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
+          "Queil.Gmox.Core": "0.3.0-alpha.1",
+          "Saturn": "0.15.0"
         }
       }
     }
