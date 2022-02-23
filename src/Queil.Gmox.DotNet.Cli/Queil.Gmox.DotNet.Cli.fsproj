@@ -22,13 +22,9 @@
 
   <ItemGroup>
     <PackageReference Include="Argu" Version="6.1.1" />
-    <PackageReference Include="Fake.Core.Process" Version="5.20.4" />
+    <PackageReference Include="Fake.Core.Process" Version="5.22.0" />
     <PackageReference Include="Froto.Parser" Version="0.7.2" />
-<!--    <PackageReference Include="Queil.Gmox.Server" Version="0.*" />-->
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Queil.Gmox.Server\Queil.Gmox.Server.fsproj" />
+    <PackageReference Include="Queil.Gmox.Server" Version="0.3.0-alpha.3" />
   </ItemGroup>
 
 </Project>
