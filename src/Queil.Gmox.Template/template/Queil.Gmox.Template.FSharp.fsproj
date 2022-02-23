@@ -9,6 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.HealthCheck" Version="*" />
-    <PackageReference Include="Queil.Gmox.Server" Version="0.2.0-alpha.5" />
+    <PackageReference Include="Queil.Gmox.Server" Version="0.*" />
   </ItemGroup>
 </Project>

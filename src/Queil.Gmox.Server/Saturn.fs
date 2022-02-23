@@ -8,6 +8,7 @@ open System.Text.Json.Serialization
 open System.Threading.Tasks
 open Giraffe
 open Grpc.AspNetCore.Server
+open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.Extensions.Hosting
@@ -69,18 +70,17 @@ module Saturn =
               options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
               let fsharpOptions = JsonFSharpOptions(unionTagNamingPolicy=JsonNamingPolicy.CamelCase, unionEncoding= JsonUnionEncoding.FSharpLuLike)
               options.Converters.Add(JsonFSharpConverter(fsharpOptions))
-              let stubConverter = StubConverter(f.GetRequiredService<ResolveResponseType>(), options, fsharpOptions)
-              options.Converters.Add(stubConverter)
-              options.Converters.Add(ResponseTypeHolder())
+              let stubConverter = StubConverter(options, fsharpOptions)
               options.Converters.Add(StubArrayConverter(stubConverter))
-              options.Converters.Add(StubConverterFactory(stubConverter))
-              options.Converters.Add(ProtoMessageConverterFactory())
+              options.Converters.Add(ProtoMessageConverter(f.GetRequiredService<IHttpContextAccessor>()))
+              options.Converters.Add(stubConverter)
               options
             services.AddSingletonFunc<JsonSerializerOptions>(getOptions)
             services
           
           let configureServices (services: IServiceCollection) =
 
+            services.AddHttpContextAccessor() |> ignore
             services.AddSingletonFunc<Json.ISerializer>(fun f -> SystemTextJson.Serializer(f.GetRequiredService<JsonSerializerOptions>()))
             services.AddSingletonFunc<ResolveResponseType>(fun f ->
               fun methodName ->
@@ -89,8 +89,8 @@ module Saturn =
                 let returnType = methodInfo.ReturnType
                 if typedefof<Task<_>> = returnType.GetGenericTypeDefinition()
                 then returnType.GenericTypeArguments.[0]
-                else failwithf "Unexpected method return type. Expected: Task<_> but was %s" returnType.FullName
-            ) |> ignore
+                else failwithf $"Unexpected method return type. Expected: Task<_> but was %s{returnType.FullName}"
+            )
             services.AddSingletonFunc<GetGrpcMethod>(fun f ->
                 let src = f.GetRequiredService<EndpointDataSource>()
                 fun methodName ->
@@ -99,8 +99,9 @@ module Saturn =
                   |> Seq.map (fun x -> x.Metadata.GetMetadata<GrpcMethodMetadata>())
                   |> Seq.filter (not << isNull)
                   |> Seq.find(fun x -> x.Method.FullName.[1..] = methodName)
+
                 method.ServiceType.GetMethod(methodName.Split("/")[1], BindingFlags.Public ||| BindingFlags.Instance)
-            ) |> ignore
+            )
             services.AddSingleton<StubStore>() |> ignore
             services.AddSingletonFunc<StubPreloader>(
               fun f -> fun () ->

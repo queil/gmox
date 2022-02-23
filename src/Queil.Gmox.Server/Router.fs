@@ -1,6 +1,9 @@
 namespace Queil.Gmox.Server
 
+open System
+open Google.Protobuf
 open Microsoft.Extensions.Hosting
+open Microsoft.AspNetCore.Http
 open Queil.Gmox.Core.Types
 open Saturn
 open Giraffe
@@ -29,8 +32,13 @@ module Router =
           
           post "/add" (fun next ctx ->
             task {
-              let! stub = ctx.BindJsonAsync<Stub>()
-              stub |> ctx.GetService<StubStore>().addOrReplace
+              ctx.Request.EnableBuffering();
+              let! stubMethod = ctx.BindJsonAsync<StubMethod>()
+              ctx.Request.Body.Position <- 0
+              let responseType = stubMethod.Method |> ctx.GetService<ResolveResponseType>()
+              ctx.Items.Add("response-descriptor", (Activator.CreateInstance(responseType) :?> IMessage).Descriptor)
+              let! output = ctx.BindJsonAsync<Stub>()
+              output |> ctx.GetService<StubStore>().addOrReplace
               return! Successful.NO_CONTENT next ctx
             })
                 

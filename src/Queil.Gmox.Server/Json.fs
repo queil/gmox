@@ -1,11 +1,10 @@
 namespace Queil.Gmox.Server
 
-open System
-open System.Collections.Generic
-open System.Reflection
 open System.Text.Json.Serialization
 open System.Text.Json
 open Google.Protobuf
+open Google.Protobuf.Reflection
+open Microsoft.AspNetCore.Http
 open Queil.Gmox.Core.Types
 
 module Json =
@@ -30,70 +29,21 @@ module Json =
     member this.TryGetConverter<'a when 'a :> JsonConverter>() =
       this.Converters |> Seq.tryFind (fun c -> c.GetType() = typeof<'a>) |> Option.map (fun x -> x :?> 'a)
 
-  type ResponseTypeHolder() =
-    inherit JsonConverter<bool>()
-      member val ResponseType = typeof<unit> with get, set
-      override _.CanConvert(_:Type) = false
-      override this.Read(_, _, _) = failwith "This should never be called"
-      override this.Write(_, _, _) = failwith "This should never be called"
+  type ProtoMessageConverter(ctxAccessor: IHttpContextAccessor) =
+    inherit JsonConverter<IMessage>()
+    override _.Read(reader: byref<Utf8JsonReader> , _, _:JsonSerializerOptions) : IMessage =
 
-  type ProtoMessageConverter<'a when 'a :> IMessage>() =
-    inherit JsonConverter<'a>()
-    member val Parsers = Dictionary<Type, MethodInfo>()
-    override x.Read(reader: byref<Utf8JsonReader> , _, options:JsonSerializerOptions) : 'a =
-      let holder =
-        match options.TryGetConverter<ResponseTypeHolder>() with
-        | None -> failwith "ResponseTypeHolder expected"
-        | Some h -> h
-
-      let parseProtoMessage =
-        if not <| x.Parsers.ContainsKey holder.ResponseType then 
-          x.Parsers.[holder.ResponseType] <-    
-              typeof<JsonParser>
-                .GetMethod("Parse", BindingFlags.Public ||| BindingFlags.Instance, [|typeof<string>|])
-                .GetGenericMethodDefinition()
-                .MakeGenericMethod(holder.ResponseType)
-        fun (data:string) -> x.Parsers.[holder.ResponseType].Invoke(JsonParser.Default, [| data |]) :?> 'a
-             
       let str = JsonDocument.ParseValue(&reader).RootElement.GetRawText()
-      str |> parseProtoMessage
+      let descriptor = ctxAccessor.HttpContext.Items["response-descriptor"] :?> MessageDescriptor
+      JsonParser.Default.Parse(str, descriptor)
 
-    override _.Write(writer: Utf8JsonWriter, msg: 'a, _:JsonSerializerOptions) : unit =
+    override _.Write(writer: Utf8JsonWriter, msg: IMessage, _:JsonSerializerOptions) : unit =
       writer.WriteRawValue(JsonFormatter.Default.Format(msg))
 
-  type ProtoMessageConverterFactory() =
-    inherit JsonConverterFactory()
-    override _.CanConvert(typ:Type) = typeof<IMessage>.IsAssignableFrom(typ)
-    override _.CreateConverter(typeToConvert: Type, options: JsonSerializerOptions): JsonConverter =
-      let def = typeof<ProtoMessageConverter<WellKnownTypes.Empty>>.GetGenericTypeDefinition()
-      let convType = def.MakeGenericType([|typeToConvert|])
-      Activator.CreateInstance(convType) :?> JsonConverter
-
-  type StubConverter(resolveResponseType: ResolveResponseType, options: JsonSerializerOptions, fsOptions: JsonFSharpOptions) =
+  type StubConverter(options: JsonSerializerOptions, fsOptions: JsonFSharpOptions) =
     inherit JsonRecordConverter<Stub>(options, fsOptions)
-      member x.GetMethod(reader: byref<Utf8JsonReader>) =
-        let methodPropertyName = fsOptions.UnionTagNamingPolicy.ConvertName(nameof Unchecked.defaultof<Stub>.Method)
-        let cp = reader
-        match cp.TokenType with
-        | JsonTokenType.StartObject ->
-          let mutable methodName : string = ""
-          while methodName = "" && cp.Read() do
-            if cp.TokenType = JsonTokenType.EndObject then ()
-            else
-              if cp.TokenType = JsonTokenType.PropertyName && cp.GetString() = methodPropertyName
-              then
-                cp.Read() |> ignore
-                methodName <- cp.GetString()
-              else
-                cp.Skip()
-          if methodName <> "" then methodName else raise (JsonException($"Missing property: '{methodPropertyName}'"))
-        | _ -> raise (JsonException())
        
-      override this.Read(reader: byref<Utf8JsonReader>, typeToConvert: Type, options: JsonSerializerOptions) =
-        let method = this.GetMethod(&reader)
-        let responseType = method |> resolveResponseType
-        let holder = options.TryGetConverter<ResponseTypeHolder>()
-        holder |> Option.iter(fun x -> x.ResponseType <- responseType)
+      override this.Read(reader: byref<Utf8JsonReader>, typeToConvert: System.Type, options: JsonSerializerOptions) =
         base.Read(&reader, typeToConvert, options)
         
       override this.Write(writer, value, options) =
@@ -118,8 +68,3 @@ module Json =
       for v in value do
         converter.Write(writer, v, options)
       writer.WriteEndArray()
-
-  type StubConverterFactory(converter:StubConverter) =
-    inherit JsonConverterFactory()
-    override this.CreateConverter(_, _) = converter
-    override this.CanConvert(typeToConvert) = typeToConvert = typeof<Stub>
