@@ -11,7 +11,7 @@ open System.Text.Json.Nodes
 open System.Threading.Tasks
 
 module Types =
-  
+
   [<CustomEquality>][<NoComparison>]
   type Stub = {
     Method: string
@@ -43,7 +43,6 @@ module Types =
   and Output = | Data of IMessage | Error of IMessage
   and StubMethod = {
     Method: string
-    Match: Rule
   }
   and StubReturn = { Return: Output }
   type GetGrpcMethod = string -> MethodInfo
