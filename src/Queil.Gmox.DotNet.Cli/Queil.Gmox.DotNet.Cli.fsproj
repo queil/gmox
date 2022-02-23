@@ -24,7 +24,7 @@
     <PackageReference Include="Argu" Version="6.1.1" />
     <PackageReference Include="Fake.Core.Process" Version="5.20.4" />
     <PackageReference Include="Froto.Parser" Version="0.7.2" />
-    <PackageReference Include="Queil.Gmox.Server" Version="0.3.0-alpha.1" />
+    <PackageReference Include="Queil.Gmox.Server" Version="0.*" />
   </ItemGroup>
 
 </Project>
