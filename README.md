@@ -110,7 +110,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
   * [x] `regexp`
 * [ ] Handle errors:
   * [ ] `/add` - if input JSON is not a valid request for the specified service method
-  * [ ] `/add` - if user tries configure a stub for a non-existent service
+  * [x] `/add` - if user tries configure a stub for a non-existent ~~service~~ method
 * [x] Support the following source of service schemas:
   1. [x] NuGet package (compile-time - as a dotnet project template, useful when we have no access to protos) 
   2. [x] Protos (runtime - as a dotnet tool, useful on local dev when we do have protos and iterate quickly)

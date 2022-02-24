@@ -6,6 +6,7 @@ open Grpc.Core
 open System
 open System.Collections.Generic
 open System.Reflection
+open System.Linq
 open System.Text.Json.JsonDiffPatch
 open System.Text.Json.Nodes
 open System.Threading.Tasks
@@ -41,6 +42,9 @@ module Types =
      | Regex m -> m
 
   and Output = | Data of IMessage | Error of IMessage
+  and StubMethod = {
+    Method: string
+  }
   type GetGrpcMethod = string -> MethodInfo
   type ResolveResponseType = string -> Type
   type StubPreloader = unit -> unit
@@ -50,8 +54,9 @@ module Types =
     Data: JsonNode
   }
 
-  let (|JArr|JObj|JVal|) (n:JsonNode) =
+  let (|JArr|JObj|JVal|JNull|) (n:JsonNode) =
     match n with
+    | null -> JNull()
     | :? JsonArray as x -> JArr(x)
     | :? JsonValue as x -> JVal(x)
     | :? JsonObject as x-> JObj(x)
@@ -97,12 +102,13 @@ module Types =
               all (next va vb)
             }
           | _, JObj a, JObj b ->
-            query {
-              for KeyValue(ka, va) in a do
-              join bkv in b
-                on (ka = bkv.Key)
-              all (next va bkv.Value)
-            }
+              query {
+                for KeyValue(ka, va) in a do
+                leftOuterJoin bkv in b
+                  on (ka = bkv.Key) into result
+                for selection in result.DefaultIfEmpty() do
+                all (next va selection.Value)
+              }
           | _, JVal a, JVal b when a.ToJsonString() = b.ToJsonString() -> true
           | Regex, JVal a, JVal b when Regex.IsMatch(b.ToJsonString(), a.ToJsonString()) -> true
           | _ -> false

@@ -3,20 +3,19 @@
     <TargetFramework>net6.0</TargetFramework>
     <Description>Gmox gRPC Mock Server for Saturn</Description>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Include="Grpc.fs" />
     <Compile Include="Json.fs" />
     <Compile Include="Router.fs" />
     <Compile Include="Saturn.fs" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="Queil.Gmox.Core" Version="0.2.0-alpha.*" />
-    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.41.0" />
+    <PackageReference Include="Queil.Gmox.Core" Version="0.3.0-alpha.3" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.42.0" />
     <PackageReference Include="Saturn" Version="0.15.0" />
-    <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" /> 
+    <PackageReference Include="FSharp.SystemTextJson" Version="0.17.4" />
   </ItemGroup>
-  
 
 </Project>

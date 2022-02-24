@@ -19,3 +19,4 @@ release.sh
 coverage.xml
 testResults.xml
 grpc_csharp_plugin
+**/.idea/

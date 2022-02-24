@@ -1,7 +1,9 @@
 namespace Queil.Gmox.Server
 
+open System.Text.Json.Nodes
 open Microsoft.Extensions.Hosting
 open Queil.Gmox.Core.Types
+open Queil.Gmox.Server.Json
 open Saturn
 open Giraffe
 
@@ -29,8 +31,9 @@ module Router =
           
           post "/add" (fun next ctx ->
             task {
-              let! stub = ctx.BindJsonAsync<Stub>()
-              stub |> ctx.GetService<StubStore>().addOrReplace
+              let! body = ctx.ReadBodyFromRequestAsync()
+              let node = JsonNode.Parse(body)
+              node |> ctx.GetService<AddOrReplaceStub>()
               return! Successful.NO_CONTENT next ctx
             })
                 
@@ -40,4 +43,5 @@ module Router =
                return! Successful.NO_CONTENT next ctx
             }
           )
+          not_found_handler (setStatusCode 404)
         }
