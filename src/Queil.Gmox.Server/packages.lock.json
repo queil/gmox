@@ -4,9 +4,9 @@
     "net6.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[6.0.1, )",
-        "resolved": "6.0.1",
-        "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
+        "requested": "[6.*, )",
+        "resolved": "6.0.3",
+        "contentHash": "ywxwMhsA1nG2hsRSMl3IzYvdugrSoFg/ZY99cuBqV0SX0yp8ubD6Hee8Bh3YwaF2Ucyq/Jz8lZ0MY5VjxgogbA=="
       },
       "FSharp.SystemTextJson": {
         "type": "Direct",
@@ -31,9 +31,9 @@
       },
       "Queil.Gmox.Core": {
         "type": "Direct",
-        "requested": "[0.3.0-alpha.3, )",
-        "resolved": "0.3.0-alpha.3",
-        "contentHash": "R20YLLVvcARfNAG4tdea0qAGEqSjAkxhie0Yt+XbpzbnrX/7ffdFdIyn0zlororucYrTxBnKuYfsbqC3itCXag==",
+        "requested": "[0.3.0, )",
+        "resolved": "0.3.0",
+        "contentHash": "ldpc4D1lBGkCLYpLlNbkoq/6I2peCRWjUvvym+uQKPNzcGu1y9qQQU9q8xI0oqFNHNBhWf5UMTnObifqt1YBbg==",
         "dependencies": {
           "FSharp.Core": "6.0.2",
           "Google.Protobuf": "3.19.4",
