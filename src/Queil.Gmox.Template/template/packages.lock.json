@@ -4,31 +4,31 @@
     "net6.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[6.0.1, )",
-        "resolved": "6.0.1",
-        "contentHash": "VrFAiW8dEEekk+0aqlbvMNZzDvYXmgWZwAt68AUBqaWK8RnoEVUNglj66bZzhs4/U63q0EfXlhcEKnH1sTYLjw=="
+        "requested": "[6.*, )",
+        "resolved": "6.0.3",
+        "contentHash": "ywxwMhsA1nG2hsRSMl3IzYvdugrSoFg/ZY99cuBqV0SX0yp8ubD6Hee8Bh3YwaF2Ucyq/Jz8lZ0MY5VjxgogbA=="
       },
       "Grpc.HealthCheck": {
         "type": "Direct",
         "requested": "[*, )",
-        "resolved": "2.42.0",
-        "contentHash": "hI8WCZwyNx6j/cdYTiwYJ242YBVhebp5e8ukSL2g9TrZsjZsLTgRKlsfs+Zjok8+ukQz/lhYo1LC/NPHqQ2yIg==",
+        "resolved": "2.44.0",
+        "contentHash": "scY4eyQvbE5IGPnH8AchSvzgbd1Y/r+WFQ2p7fNAyMIMPbijoCWMRuO3yBsxSyE+Wlm9EifCMU+/M1FzYXlV3w==",
         "dependencies": {
-          "Google.Protobuf": "3.18.1",
-          "Grpc.Core.Api": "2.42.0",
+          "Google.Protobuf": "3.19.2",
+          "Grpc.Core.Api": "2.44.0",
           "System.Threading.Channels": "4.6.0"
         }
       },
       "Queil.Gmox.Server": {
         "type": "Direct",
-        "requested": "[0.2.0-alpha.5, )",
-        "resolved": "0.2.0-alpha.5",
-        "contentHash": "WhIniPQV8+neluRPOYfiWpUiQuZ2jKLD6QF71OPp5bV+BaAtlMJGNfbK97J9mP4tXZVOuPFw0TPz+DhVewR0KQ==",
+        "requested": "[0.*, )",
+        "resolved": "0.3.1",
+        "contentHash": "ja/dQ9yLtaqTXqzQSnqqsH7hiE1xbFUBJj38QNbLG8NLie/jCOBE5G0ZxZqhv7V9OsXmuLD2WY8IhsoSHiHU2Q==",
         "dependencies": {
-          "FSharp.Core": "6.0.1",
+          "FSharp.Core": "6.0.3",
           "FSharp.SystemTextJson": "0.17.4",
-          "Grpc.AspNetCore.Server.Reflection": "2.41.0",
-          "Queil.Gmox.Core": "0.2.0-alpha.5",
+          "Grpc.AspNetCore.Server.Reflection": "2.42.0",
+          "Queil.Gmox.Core": "0.3.0",
           "Saturn": "0.15.0"
         }
       },
@@ -74,59 +74,59 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.19.1",
-        "contentHash": "M6yun2BPdHkBjD3V14muZSt72azWHRJEx88ME2TyyH2+/ww6R3hIptjBFQQtO6pmkfLXW/NGQ4hADWSa9AmK2A=="
+        "resolved": "3.19.4",
+        "contentHash": "fd07/ykL4O4FhqrZIELm5lmiyOHfdPg9+o+hWr6tcfRdS7tHXnImg/2wtogLzlW2eEmr0J7j6ZrZvaWOLiJbxQ=="
       },
       "Grpc.AspNetCore.Server": {
         "type": "Transitive",
-        "resolved": "2.41.0",
-        "contentHash": "Snbmre+4zd7w5SKmaAq49G6l3eXpKwn6d//ph2klloVEradOvvMd1q2bYybG4Ryr6YU6bN2zJRpUQjKZy1JZug==",
+        "resolved": "2.42.0",
+        "contentHash": "/C0kQoKDIuEq8CdN4rmz42MO9ToKC+EWs22LywK3+T+nFdgPyTltenPrHj9RFzaiMp9N63TBO7Nd6IQqpLcAzQ==",
         "dependencies": {
-          "Grpc.Net.Common": "2.41.0"
+          "Grpc.Net.Common": "2.42.0"
         }
       },
       "Grpc.AspNetCore.Server.Reflection": {
         "type": "Transitive",
-        "resolved": "2.41.0",
-        "contentHash": "B9vPPmqKcJhyNQVWJMb/qn79qnjKzGjKnwXHDWK+Ommo7WfqZ0l74EOsIqbjbgaKoi5fwmkyLhJBo2NBf45gQQ==",
+        "resolved": "2.42.0",
+        "contentHash": "Ne9sN4T/PcLTN+/tYObMtPEuvDsTTUnSytUCnoE0jKs4cSahc5sjhEiDUO7UjRPgItb6Xb7BHeQNufeOrEOvLQ==",
         "dependencies": {
-          "Google.Protobuf": "3.18.0",
-          "Grpc.AspNetCore.Server": "2.41.0",
-          "Grpc.Reflection": "2.41.0"
+          "Google.Protobuf": "3.18.1",
+          "Grpc.AspNetCore.Server": "2.42.0",
+          "Grpc.Reflection": "2.42.0"
         }
       },
       "Grpc.Core": {
         "type": "Transitive",
-        "resolved": "2.42.0",
-        "contentHash": "TSTkennjPAlg1S5irp2DdOpwqEcCbXE6q2y44n/yWYc8ngUvP5nX4lczrrtuyYKOyIAkmlthVLka3uV4k/np5Q==",
+        "resolved": "2.44.0",
+        "contentHash": "H2rTNePSYeEqUgBBqiE5KZ/yOX7jEtETjWjv4gGtnYxrlpZ79VAHe+4KtZAnt2KJMiGvqTm7eo1SPk+QpiPfaw==",
         "dependencies": {
-          "Grpc.Core.Api": "2.42.0",
+          "Grpc.Core.Api": "2.44.0",
           "System.Memory": "4.5.3"
         }
       },
       "Grpc.Core.Api": {
         "type": "Transitive",
-        "resolved": "2.42.0",
-        "contentHash": "12ciAZrp8orzYFZcruvzshhMEbbD4CAFOe9an1Fa4/c5ZrCtqUjWVPa1Dpk/1Pnv5E1KTeIHPuOtPTkpMLOCoQ==",
+        "resolved": "2.44.0",
+        "contentHash": "FBfPMvKwT8q98T8lWa5z6nBMLdH/Mmo5g4yyYYMvbXLWDzo4beqa7CUU5QH3PKvo2X6/b+UAZ2IymXlrYG3IXg==",
         "dependencies": {
           "System.Memory": "4.5.3"
         }
       },
       "Grpc.Net.Common": {
         "type": "Transitive",
-        "resolved": "2.41.0",
-        "contentHash": "Mcb6ybFRZYEqn1UVpfCADL2HSTJSK9+V2BBLyS6vebMNkmGwqa0KQ3x++kC+n28MAP4BlrR+jxW0XGNP6V9amw==",
+        "resolved": "2.42.0",
+        "contentHash": "+nYAAvpc3yg/HS+uleYoNUBR0sf0EVpY5FAos5v8PILnTbGU552QfxAaToY/wCMYExkde/zIJM/l+JvHMezYSg==",
         "dependencies": {
-          "Grpc.Core.Api": "2.41.0"
+          "Grpc.Core.Api": "2.42.0"
         }
       },
       "Grpc.Reflection": {
         "type": "Transitive",
-        "resolved": "2.41.0",
-        "contentHash": "vnGbgBF19gIXX4JEk2EduE8FiaRkEHnYedmNOrm6xaKsab2P0lTby2oRIUFE+SsKfWBRcsHgAxjv2mzbKcmTEQ==",
+        "resolved": "2.42.0",
+        "contentHash": "pBffb+l/cWjZpg5gReTrp3nbOoFnRriQKFQCPifstSXjQwJ8cDQL2QLLCtv7ZF/gC6tUHD7NVQdAdS2fg9O7ig==",
         "dependencies": {
-          "Google.Protobuf": "3.17.3",
-          "Grpc.Core.Api": "2.41.0"
+          "Google.Protobuf": "3.18.1",
+          "Grpc.Core.Api": "2.42.0"
         }
       },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
@@ -214,12 +214,12 @@
       },
       "Queil.Gmox.Core": {
         "type": "Transitive",
-        "resolved": "0.2.0-alpha.5",
-        "contentHash": "orq3uIRuYvwcnpOva6TASTqA0A4es4J09bIAIJE/izcFRGom6GG3zgDMKh/gxmcVssRxxMulB8qC8hZhdlerIw==",
+        "resolved": "0.3.0",
+        "contentHash": "ldpc4D1lBGkCLYpLlNbkoq/6I2peCRWjUvvym+uQKPNzcGu1y9qQQU9q8xI0oqFNHNBhWf5UMTnObifqt1YBbg==",
         "dependencies": {
-          "FSharp.Core": "6.0.1",
-          "Google.Protobuf": "3.19.1",
-          "Grpc.Core": "2.42.0",
+          "FSharp.Core": "6.0.2",
+          "Google.Protobuf": "3.19.4",
+          "Grpc.Core": "2.44.0",
           "System.Reflection.Emit": "4.7.0",
           "SystemTextJson.JsonDiffPatch": "1.0.0-preview.2"
         }
