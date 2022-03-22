@@ -45,9 +45,13 @@ Static files should contain valid JSON arrays of stub configurations, have the `
 
 ### Dynamic REST API configuration
 
-Single stub configurations (not arrays) can be `POST`ed to the `/add` endpoint at port `4771`.
+Single stub configurations (not arrays) can be `POST`ed to the `/add` endpoint at port `4771` like:
 
-### Single stub configuration JSON example
+```bash
+curl -X POST http://localhost:4771/add -d '{ "method": "grpc.health.v1.Health/Check", "match": { "exact": {} }, "return": { "data": { "status": "NOT_SERVING" } } }'
+```
+
+### Stub configuration JSON explained
 
 Given the server receives a call to the `grpc.health.v1.Health/Check` method and the message is `{}` (empty) then it returns `{"status": "SERVING"}`.
 
