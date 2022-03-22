@@ -29,6 +29,12 @@ gmox serve --proto tests/resources/protos/org/books/list/svc_list.proto tests/re
 
 You can also use Gmox as a [dotnet template](#dotnet-template).
 
+## FAQ
+
+### Does is support running/stubbing multiple services (and from multiple protos)?
+
+Yes
+
 ## Stubbing configuration
 
 Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`),
