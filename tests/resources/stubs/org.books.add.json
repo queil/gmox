@@ -1,0 +1,13 @@
+[
+  {
+    "method": "org.books.add.AddService/AddBook",
+    "match": {
+      "exact" : {
+        "author": "Eric Arthur Blair"
+      }
+    },
+    "return" : {
+      "data": { }
+    }
+  }
+]
