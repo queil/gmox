@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package org.books.add;
+
+import "google/protobuf/empty.proto";
+import "org/books/shared/msg_book.proto";
+
+service AddService
+{
+    rpc AddBook (org.books.shared.Book) returns (google.protobuf.Empty) {}
+}
