@@ -23,16 +23,31 @@ Run the server:
 
 ```bash
 # assuming cd = root of this repo
-gmox serve --proto tests/integration/protos/org/books/list/svc_list.proto --root tests/integration/protos --stub-dir tests/integration/stubs
+# adding two services and the stubs dir contains stubs for both of them
+gmox serve --proto tests/resources/protos/org/books/list/svc_list.proto tests/resources/protos/org/books/add/svc_add.proto --root tests/resources/protos --stub-dir tests/resources/stubs
 ```
 
 You can also use Gmox as a [dotnet template](#dotnet-template).
 
 ## Stubbing configuration
 
-Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`), a rule that matches incoming requests data, and a corresponding response data attached to it.
+Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`),
+a rule that matches incoming requests data,and a corresponding response data attached to it.
 
-### Example
+There are two ways of configuring stubs (which work both in the dotnet tool and the dotnet template):
+
+### Static JSON files
+
+Static files should contain valid JSON arrays of stub configurations, have the `.json` extension, and they should be located in the directory:
+
+* in dotnet cli mode - given by the `--stub-dir` command line parameter 
+* in dotnet template mode - defined in `App.fs` as `StubPreloadDir`
+
+### Dynamic REST API configuration
+
+Single stub configurations (not arrays) can be `POST`ed to the `/add` endpoint at port `4771`.
+
+### Single stub configuration JSON example
 
 Given the server receives a call to the `grpc.health.v1.Health/Check` method and the message is `{}` (empty) then it returns `{"status": "SERVING"}`.
 
