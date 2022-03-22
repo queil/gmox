@@ -32,7 +32,7 @@ You can also use Gmox as a [dotnet template](#dotnet-template).
 ## Stubbing configuration
 
 Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`),
-a rule that matches incoming requests data,and a corresponding response data attached to it.
+a rule that matches incoming requests data, and a corresponding response data attached to it.
 
 There are two ways of configuring stubs (which work both in the dotnet tool and the dotnet template):
 
