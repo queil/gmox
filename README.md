@@ -31,9 +31,9 @@ You can also use Gmox as a [dotnet template](#dotnet-template).
 
 ## FAQ
 
-### Does is support running/stubbing multiple services (and from multiple protos)?
+* Does is support running/stubbing multiple services (and from multiple protos)? ✔️
 
-Yes
+  Yes, in the dotnet cli mode you can specify multiple proto files after the `--proto` param as long as they're in a common root or self-contained. 
 
 ## Stubbing configuration
 
