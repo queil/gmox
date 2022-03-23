@@ -14,13 +14,13 @@ with
       | Version _ -> "Displays version"
 
 and Serve =
-| [<AltCommandLine("-p")>]Proto of string list
-| [<AltCommandLine("-r")>]Root of string
-| [<AltCommandLine("-i")>]Imports of string list
-| [<AltCommandLine("-s")>]Stub_Dir of string
-| [<AltCommandLine("-w")>]Work_Dir of string
-| [<AltCommandLine("-v")>]Validate_Only
-| [<AltCommandLine("-d")>]Debug_Mode
+| [<AltCommandLine("-p")>][<Unique>] Proto of string list
+| [<AltCommandLine("-r")>][<Unique>] Root of string
+| [<AltCommandLine("-i")>][<Unique>] Imports of string list
+| [<AltCommandLine("-s")>][<Unique>] Stub_Dir of string
+| [<AltCommandLine("-w")>][<Unique>] Work_Dir of string
+| [<AltCommandLine("-v")>][<Unique>] Validate_Only
+| [<AltCommandLine("-d")>][<Unique>] Debug_Mode
 with
   interface IArgParserTemplate with
     member this.Usage =
@@ -66,4 +66,3 @@ and Options = {
         DebugMode = serveCmd.Contains(Debug_Mode)
         ValidateOnly = serveCmd.Contains(Validate_Only)
       } |> Serve
-
