@@ -80,6 +80,8 @@ steps:
     testResultsFiles: '$(System.DefaultWorkingDirectory)/testResults.xml'
     failTaskOnFailedTests: true
 
-- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/$(parameters.packageToPublish).*.nupkg
-  displayName: 'Push'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'), not(eq(parameters.packageToPublish, 'none')))
+
+- ${{ if not(eq(parameters.packageToPublish, 'none')) }}:
+  - bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/$(parameters.packageToPublish).*.nupkg
+    displayName: 'Push'
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
