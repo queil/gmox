@@ -1,3 +1,10 @@
+on: 
+  workflow_dispatch:
+    inputs:
+      packageToPublish:
+        description: 'Package to publish'     
+        required: true
+
 trigger:
   branches:
     include:
@@ -71,3 +78,7 @@ steps:
 - bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/*.nupkg
   displayName: 'Push'
   condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/${{ github.event.inputs.packageToPublish }}.*.nupkg
+  displayName: 'Push'
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'), github.event.inputs.packageToPublish)
