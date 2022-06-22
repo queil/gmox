@@ -1,9 +1,13 @@
-on: 
-  workflow_dispatch:
-    inputs:
-      packageToPublish:
-        description: 'Package to publish'     
-        required: true
+parameters:
+- name: packageToPublish
+  displayName: Package to publish
+  type: string
+  default: none
+  values:
+  - Queil.Gmox.Core
+  - Queil.Gmox.DotNet.Cli
+  - Queil.Gmox.Server
+  - Queil.Gmox.Template
 
 trigger:
   branches:
@@ -75,10 +79,6 @@ steps:
     testResultsFiles: '$(System.DefaultWorkingDirectory)/testResults.xml'
     failTaskOnFailedTests: true
 
-- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/*.nupkg
+- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/$(packageToPublish).*.nupkg
   displayName: 'Push'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-
-- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/${{ github.event.inputs.packageToPublish }}.*.nupkg
-  displayName: 'Push'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'), github.event.inputs.packageToPublish)
+  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'), not(eq(variables['packageToPublish'], 'none')))
