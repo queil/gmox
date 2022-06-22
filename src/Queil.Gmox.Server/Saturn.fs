@@ -15,6 +15,7 @@ open Grpc.AspNetCore.Server
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
+open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Queil.Gmox.Core.Types
@@ -59,11 +60,17 @@ module Saturn =
               ServicesConfig = configureServices::state.ServicesConfig
           }
 
+      [<CustomOperation "listen_any">]
+      member __.ListenAny (state:ApplicationState, portNumber, listenOptions : ListenOptions -> unit) =
+        let config (webHostBuilder:IWebHostBuilder) =
+            webHostBuilder
+               .ConfigureKestrel(fun options -> options.ListenAnyIP(portNumber, Action<ListenOptions> listenOptions))
+
+        {state with WebHostConfigs = config::state.WebHostConfigs}
+
       [<CustomOperation("use_gmox")>]
       member x.UseGmox(state, config: AppSettings) =
 
-          let state = x.ListenLocal(state, 4770, fun opts -> opts.Protocols <- HttpProtocols.Http2)
-          let state = x.ListenLocal(state, 4771, fun opts -> opts.Protocols <- HttpProtocols.Http1)
           let state = x.MemoryCache(state)
           let state = x.UseGZip(state)
           let state = x.Router(state, Queil.Gmox.Server.Router.router)
