@@ -1,5 +1,6 @@
 module Queil.Gmox.Program
 
+open Microsoft.AspNetCore.Server.Kestrel.Core
 open Fake.Core
 open Froto.Parser
 open Froto.Parser.Ast
@@ -128,6 +129,8 @@ try
             Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
             StubPreloadDir = opts.StubsDir
           }
+          listen_any 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
+          listen_any 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
         }
       run app
   with
