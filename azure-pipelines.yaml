@@ -1,3 +1,15 @@
+parameters:
+- name: packageToPublish
+  displayName: Package to publish
+  type: string
+  default: none
+  values:
+  - Queil.Gmox.Core
+  - Queil.Gmox.DotNet.Cli
+  - Queil.Gmox.Server
+  - Queil.Gmox.Template
+  - none
+
 trigger:
   branches:
     include:
@@ -68,6 +80,8 @@ steps:
     testResultsFiles: '$(System.DefaultWorkingDirectory)/testResults.xml'
     failTaskOnFailedTests: true
 
-- bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/*.nupkg
-  displayName: 'Push'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- ${{ if not(eq(parameters.packageToPublish, 'none')) }}:
+  - bash: dotnet nuget push -s https://api.nuget.org/v3/index.json -k $(nuget-api-key) $(Build.ArtifactStagingDirectory)/${{ parameters.packageToPublish }}.*.nupkg
+    displayName: 'Push'
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
