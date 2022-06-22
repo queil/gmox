@@ -8,6 +8,7 @@ parameters:
   - Queil.Gmox.DotNet.Cli
   - Queil.Gmox.Server
   - Queil.Gmox.Template
+  - none
 
 trigger:
   branches:
