@@ -16,6 +16,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Routing
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.AspNetCore.Hosting
+open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Queil.Gmox.Core.Types
@@ -61,13 +62,27 @@ module Saturn =
           }
 
       [<CustomOperation "listen_any">]
-      member __.ListenAny (state:ApplicationState, portNumber, listenOptions : ListenOptions -> unit) =
+      member x.ListenAny (state:ApplicationState, portNumber, listenOptions : ListenOptions -> unit) =
+        x.ListenAnyCore(state, (fun _ -> portNumber), listenOptions)
+   
+      member internal _.ListenAnyCore (state:ApplicationState, portNumber, listenOptions : ListenOptions -> unit) =
         let config (webHostBuilder:IWebHostBuilder) =
             webHostBuilder
-               .ConfigureKestrel(fun options -> options.ListenAnyIP(portNumber, Action<ListenOptions> listenOptions))
+               .ConfigureKestrel(fun context options -> options.ListenAnyIP(portNumber context, Action<ListenOptions> listenOptions))
 
         {state with WebHostConfigs = config::state.WebHostConfigs}
-
+      
+      
+      /// Configure Gmox ports via IConfiguration
+      [<CustomOperation "configure_gmox">]
+      member x.ConfigureGmox(state:ApplicationState) =
+        let getPort (section:string) (defaultPort:int) (context:WebHostBuilderContext) =
+           context.Configuration.GetSection("gmox:ports").GetValue<int>(section, defaultPort)
+        let state = x.ListenAnyCore(state, getPort "control" 4771, fun opts -> opts.Protocols <- HttpProtocols.Http1)
+        let state = x.ListenAnyCore(state, getPort "serve" 4770, fun opts -> opts.Protocols <- HttpProtocols.Http2)
+        let state = x.CliArguments(state, Environment.GetCommandLineArgs()[1..])
+        state
+      
       [<CustomOperation("use_gmox")>]
       member x.UseGmox(state, config: AppSettings) =
 
