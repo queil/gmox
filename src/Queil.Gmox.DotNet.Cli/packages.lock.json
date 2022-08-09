@@ -4,7 +4,7 @@
     "net6.0": {
       "Argu": {
         "type": "Direct",
-        "requested": "[6.*, 7.0.0)",
+        "requested": "[6.*, )",
         "resolved": "6.1.1",
         "contentHash": "5SBLYihaZ6/YNpRU+0v0QLsCk7ABmOWNOUwkXVUql2w7kJ6Hi4AFhgIv5XLTtxTid5/xrJAL+PglQkNcjANCJg==",
         "dependencies": {
@@ -14,22 +14,22 @@
       },
       "Fake.Core.Process": {
         "type": "Direct",
-        "requested": "[5.*, 6.0.0)",
-        "resolved": "5.22.0",
-        "contentHash": "m0xvApYnWC5HqRJ6DrU0T5yaq6e7LiVE9UIKMRFP0hGFVmHJ5WCD5SIpoZsOnZaP4Xb7wI9KLYe7ydbvzN2EuQ==",
+        "requested": "[5.*, )",
+        "resolved": "5.23.0",
+        "contentHash": "aZvcVYnsWlzyaiGImnBvjsWfYmv1HD2CGUEdWWpHzPHJJfmY3wUBHYdNTk6UwMCYDj10xJtlVksLaU0NUuwtWQ==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fake.Core.Environment": "5.22.0",
-          "Fake.Core.FakeVar": "5.22.0",
-          "Fake.Core.String": "5.22.0",
-          "Fake.Core.Trace": "5.22.0",
-          "Fake.IO.FileSystem": "5.22.0",
+          "Fake.Core.Environment": "5.23.0",
+          "Fake.Core.FakeVar": "5.23.0",
+          "Fake.Core.String": "5.23.0",
+          "Fake.Core.Trace": "5.23.0",
+          "Fake.IO.FileSystem": "5.23.0",
           "System.Collections.Immutable": "5.0.0"
         }
       },
       "Froto.Parser": {
         "type": "Direct",
-        "requested": "[0.*, 1.0.0)",
+        "requested": "[0.*, )",
         "resolved": "0.7.2",
         "contentHash": "8pW4OhEItk/i7eVB2KSE2IgXcjMh2IhdJQWT8Gy0pHoofc1CXnqVpg58uAj/xPaKmFRIjUB51Fz/SRLBSeFx8A==",
         "dependencies": {
@@ -45,7 +45,7 @@
       },
       "Queil.Gmox.Server": {
         "type": "Direct",
-        "requested": "[0.6.0, 1.0.0)",
+        "requested": "[0.6.0, )",
         "resolved": "0.6.0",
         "contentHash": "rTIc+g96owow8l9cqQD7VNqpKKGsJ+bjBcoRRIy2oW6qSSEbP4YMbm17L13SOoJQfZOx+8R2K2bK/NAMpsjndg==",
         "dependencies": {
@@ -58,54 +58,54 @@
       },
       "Fake.Core.Context": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "ozNnnnBg3zKdfn1Js83GXFqu3tZT33sHk2FqnUPk8sk5ngGX+geixRuf9YeGpUPTO8XlAs/9J8iz498r/LFOww==",
+        "resolved": "5.23.0",
+        "contentHash": "4rLYZNJ7Kt8YY9XiMQ3U2nxtIzsXY3kdHF4IZaOjx0mit9kZEizxfHYzsS7l7Jd1AdUT4HHLVxL2jDwcNJJZfg==",
         "dependencies": {
           "FSharp.Core": "6.0.0"
         }
       },
       "Fake.Core.Environment": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "Ub88LO6viLznh0bIMtknh6ym0ru05oWxSN+f1EjSXTLMctYRjgOVsCcHzt9IkxtzBPvQ63ZIzatZMyE/kcNchg==",
+        "resolved": "5.23.0",
+        "contentHash": "CE+pYi3Lpo9ppGgYtRagbGMQVm/PpoBVCB5IyajErwL3MEYtSDASwz9k4COsfhap1ICHMZABjya4zUtAKqUgww==",
         "dependencies": {
           "FSharp.Core": "6.0.0"
         }
       },
       "Fake.Core.FakeVar": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "pvbWN//JcZkDltxTA/2RMI9rOqz9qskb/V2BJPSXIP5fYIvdypzMkt9dtkzrWwo9om+ehYNF+NKrg0xtqRI/OA==",
+        "resolved": "5.23.0",
+        "contentHash": "9SwkXBDgY3lbTNnf+hFalyRU68Q5Deqoppu5VU6e9ze4Qtj1UAPRWrzbxwNtzPtZa9DP+h9sz1KL1WQyR5k/2Q==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fake.Core.Context": "5.22.0"
+          "Fake.Core.Context": "5.23.0"
         }
       },
       "Fake.Core.String": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "k8pjgHwsJL02AEm/Ki82kUkPQFmW5PkYEZ8s3R+Pjyrs2ogyzVrPOJNQlgga4d3KshgRNBWF5+r995qPet7MkA==",
+        "resolved": "5.23.0",
+        "contentHash": "ZPVzX5M7/AUexe3FDQpKt6AAqaZUg3knDGXBnwyzWnxfKZiJgZy/sto9cvsA4nqP0/KdLcwZS4VxYUKLnMMCRQ==",
         "dependencies": {
           "FSharp.Core": "6.0.0"
         }
       },
       "Fake.Core.Trace": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "NYVQ8T/XYh7/eUM1Z803/c9wSyYhq8YQAkK2JE0iNRLosRxC5ABZxW7cK7g2Wnybk2CB1/E4G9tNZoDT4isDUQ==",
+        "resolved": "5.23.0",
+        "contentHash": "ABLTkfRRgDjMn6VMDBwRTz5LRUGNaVKGwCkvRKZsEsVfz8Bri7uUOx3QtqOwKVVI2zHTaWmQiSZ9qMFCIZYBxg==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fake.Core.Environment": "5.22.0",
-          "Fake.Core.FakeVar": "5.22.0"
+          "Fake.Core.Environment": "5.23.0",
+          "Fake.Core.FakeVar": "5.23.0"
         }
       },
       "Fake.IO.FileSystem": {
         "type": "Transitive",
-        "resolved": "5.22.0",
-        "contentHash": "6a9BtXe2WMWJScEheopXwKqgaQ3lfQoKfr8lB/HCz3RTM8YtkU+IomkXYsxdgeHPZ58Ja4dQQHzo2zdQZd6gUg==",
+        "resolved": "5.23.0",
+        "contentHash": "RyBMHgo6NxeNm+PcQizsjuCQMOya6MImeulWaZMzNHUTpTWTOUZ/e/cc6Czvd/nPAm94QMV39wpBvBSzxEQRbA==",
         "dependencies": {
           "FSharp.Core": "6.0.0",
-          "Fake.Core.String": "5.22.0"
+          "Fake.Core.String": "5.23.0"
         }
       },
       "FParsec": {
