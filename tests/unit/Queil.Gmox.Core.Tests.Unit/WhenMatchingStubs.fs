@@ -9,12 +9,9 @@ open Org.Books.List
 [<Tests>]
 let tests =
 
-  let store () = StubStore(fun s -> typeof<ListResponse>)
-
   let json (value:'a) = JsonSerializer.SerializeToNode(value)
 
-  let givenStubs (stubs: Stub list) =
-    let store = store ()
+  let configure (stubs: Stub list) (store:StubStore) =
     for s in stubs do
       store.addOrReplace s
     store
@@ -26,11 +23,11 @@ let tests =
      r.Books.Add(b)
      r
 
-  let exactResponse = response "Exact"
-  let partialResponse = response "Partial"
-  let regexResponse = response "Regex"
+  let exactResponse () = response "Exact"
+  let partialResponse () = response "Partial"
+  let regexResponse () = response "Regex"
 
-  let testRequest =
+  let testRequest () =
     json {|
       this = {|
           is = [1; 2; 3]
@@ -38,7 +35,7 @@ let tests =
       someString = "value"
     |}
 
-  let exactMatch =
+  let exactMatch () =
     json {|
       this = {|
           is = [1; 2; 3]
@@ -46,19 +43,19 @@ let tests =
       someString = "value"
     |} |> Exact
 
-  let partialMatch =
+  let partialMatch () =
     json {|
       this = {|
           is = [3]
       |}
     |} |> Partial
 
-  let regexMatch =
+  let regexMatch () =
     json {|
       someString = "va.*"
     |} |> Regex
 
-  let noMatch =
+  let noMatch () =
     json {|
       this = {|
           is = []
@@ -80,10 +77,10 @@ let tests =
     testCase "should match on exact" <| fun _ ->
 
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = exactMatch
+            Match = exactMatch ()
             Return = Data (ListResponse())
           }
         ]
@@ -91,17 +88,17 @@ let tests =
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest ()
         }
       "Expected stub configuration for `org.books.list.ListService/ListBooks`" |> Expect.isSome result
 
     testCase "should match on partial" <| fun _ ->
 
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = partialMatch
+            Match = partialMatch ()
             Return = Data (ListResponse())
           }
         ]
@@ -109,17 +106,17 @@ let tests =
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest ()
         }
       "Expected stub configuration for `org.books.list.ListService/ListBooks`" |> Expect.isSome result
 
     testCase "should match on regex" <| fun _ ->
 
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = regexMatch
+            Match = regexMatch ()
             Return = Data (ListResponse())
           }
         ]
@@ -127,85 +124,85 @@ let tests =
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest ()
         }
       "Expected stub configuration for `org.books.list.ListService/ListBooks`" |> Expect.isSome result
 
     testCase "should match find most specific match" <| fun _ ->
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = regexMatch
-            Return = Data regexResponse
+            Match = regexMatch ()
+            Return = Data (regexResponse ())
           };
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = partialMatch
-            Return = Data partialResponse
+            Match = partialMatch ()
+            Return = Data (partialResponse ())
           };
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = exactMatch
-            Return = Data exactResponse
+            Match = exactMatch ()
+            Return = Data (exactResponse ())
           }
         ]
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest ()
         }
-      shouldBeCorrectMatch exactResponse result
+      shouldBeCorrectMatch (exactResponse ()) result
 
     testCase "should match find most specific match 2" <| fun _ ->
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = regexMatch
-            Return = Data regexResponse
+            Match = regexMatch ()
+            Return = Data (regexResponse())
           };
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = partialMatch
-            Return = Data partialResponse
+            Match = partialMatch()
+            Return = Data (partialResponse())
           };
         ]
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest()
         }
-      shouldBeCorrectMatch partialResponse result
+      shouldBeCorrectMatch (partialResponse ()) result
 
     testCase "should match find most specific match 3" <| fun _ ->
       let store =
-        givenStubs [
+        StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = regexMatch
-            Return = Data regexResponse
+            Match = regexMatch ()
+            Return = Data (regexResponse ())
           };
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = exactMatch
-            Return = Data exactResponse
+            Match = exactMatch ()
+            Return = Data (exactResponse ())
           }
         ]
       let result =
         store.findBestMatchFor {
           Method = "org.books.list.ListService/ListBooks"
-          Data = testRequest
+          Data = testRequest ()
         }
-      shouldBeCorrectMatch exactResponse result
+      shouldBeCorrectMatch (exactResponse ()) result
 
     testCase "should not match empty requests on no match" <| fun _ ->
 
       let store =
-        givenStubs [
+       StubStore(fun _ -> typeof<ListResponse>) |> configure [
           {
             Method = "org.books.list.ListService/ListBooks"
-            Match = noMatch
+            Match = noMatch ()
             Return = Data (ListResponse())
           }
         ]
