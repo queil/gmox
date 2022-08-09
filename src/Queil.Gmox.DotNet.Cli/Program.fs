@@ -129,14 +129,14 @@ try
             Services = Grpc.servicesFromAssembly asm |> Seq.map Emit.makeImpl |> Seq.toList
             StubPreloadDir = opts.StubsDir
           }
-          listen_any 4770 (fun opts -> opts.Protocols <- HttpProtocols.Http2)
-          listen_any 4771 (fun opts -> opts.Protocols <- HttpProtocols.Http1)
+          listen_any opts.ServePort (fun opts -> opts.Protocols <- HttpProtocols.Http2)
+          listen_any opts.ControlPort (fun opts -> opts.Protocols <- HttpProtocols.Http1)
         }
       run app
   with
     | :? Argu.ArguParseException as p ->
-      printfn "%s" p.Message
+      printfn $"%s{p.Message}"
       System.Environment.ExitCode <- 1
     | e -> 
-      printfn "%s" (e.ToString())
+      printfn $"%s{e.ToString()}"
       System.Environment.ExitCode <- 1

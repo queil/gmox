@@ -143,7 +143,7 @@ Both the CLI tool and a server generated from the template may be packaged as Do
 * [ ] Support recording received calls and expose via the control API
 * [ ] Support requesting JSON-formatted request/responses so they can make creating stubs easier
 * [x] Support preloading stubs form JSON
-* [ ] Support specifying port numbers
+* [x] Support specifying port numbers
 * [ ] Support returning errors
 * [ ] CI: make push stage only run after the whole test matrix passes
 

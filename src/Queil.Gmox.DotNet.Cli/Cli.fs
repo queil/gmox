@@ -21,6 +21,8 @@ and Serve =
 | [<AltCommandLine("-w")>][<Unique>] Work_Dir of string
 | [<AltCommandLine("-v")>][<Unique>] Validate_Only
 | [<AltCommandLine("-d")>][<Unique>] Debug_Mode
+| [<AltCommandLine("-sp")>][<Unique>] Serve_Port of int
+| [<AltCommandLine("-cp")>][<Unique>] Control_Port of int
 with
   interface IArgParserTemplate with
     member this.Usage =
@@ -32,6 +34,8 @@ with
       | Work_Dir _ -> "Overrides the current working directory."
       | Debug_Mode _ -> "Debug mode."
       | Validate_Only _ -> "Makes sure protos compile successfully and terminates."
+      | Serve_Port _ -> "gRPC port the mocked service(s) are served at. Default: 4770"
+      | Control_Port _ -> "HTTP port the control API is served at: Default: 4771"
 
 type Cmd = | Version | Serve of Options
 and Options = {
@@ -41,6 +45,8 @@ and Options = {
   StubsDir: string option
   DebugMode: bool
   ValidateOnly: bool
+  ServePort: int
+  ControlPort: int
 }
 
   let parseOptions argv =
@@ -65,4 +71,6 @@ and Options = {
         StubsDir = serveCmd.TryGetResult(Stub_Dir) |> Option.map fullPath
         DebugMode = serveCmd.Contains(Debug_Mode)
         ValidateOnly = serveCmd.Contains(Validate_Only)
+        ServePort = serveCmd.TryGetResult(Serve_Port) |> Option.defaultValue 4770
+        ControlPort = serveCmd.TryGetResult(Control_Port) |> Option.defaultValue 4771
       } |> Serve
