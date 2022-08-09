@@ -71,8 +71,7 @@ module Saturn =
                .ConfigureKestrel(fun context options -> options.ListenAnyIP(portNumber context, Action<ListenOptions> listenOptions))
 
         {state with WebHostConfigs = config::state.WebHostConfigs}
-      
-      
+
       /// Configure Gmox ports via IConfiguration
       [<CustomOperation "configure_gmox">]
       member x.ConfigureGmox(state:ApplicationState) =
