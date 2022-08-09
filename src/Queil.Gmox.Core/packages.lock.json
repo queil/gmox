@@ -4,19 +4,19 @@
     "net6.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[6.0.4, )",
-        "resolved": "6.0.4",
-        "contentHash": "CYqAfmO7JvN38M+ACkstS8taVfl8C0mCkvSiBAshfKuu2Nut6+8MuFU7Wahu09wGIyFPlRz5ArFWxSOM5mhMSA=="
+        "requested": "[6.0.5, )",
+        "resolved": "6.0.5",
+        "contentHash": "FwdQVtpj34xt8vKyFUUeNIS+obWlEnSrSW7y1ivRVts/ZsrUsKyOd0bZehgFhWdnB/NBsa9DCWvNFMTO0XDFcg=="
       },
       "Google.Protobuf": {
         "type": "Direct",
-        "requested": "[3.*, 4.0.0)",
-        "resolved": "3.21.1",
-        "contentHash": "tYT6ez1N/ecOdxaaYFu9KxADHdAmRzwt9o4i4tO4wGYsGo2mAPDeHJKO2erfnCsL/Z+6C29o0QUJUJnlG2iDAA=="
+        "requested": "[3.*, )",
+        "resolved": "3.21.4",
+        "contentHash": "2dmAaFK3brEBdte0vZDP7L/UZV8SgZXYweNPy5qHCbTzj+eTvQpRRAAmd4ErGXCPn6x5rZxEBSINGUJiGms4WA=="
       },
       "Grpc.Core": {
         "type": "Direct",
-        "requested": "[2.*, 3.0.0)",
+        "requested": "[2.*, )",
         "resolved": "2.46.3",
         "contentHash": "lu7KP7BVWdvFXWbn/IFYHBQCpMohJwbLM1aL+nu2C0pY2CdS0idaUNAJNC2nZ60fXfqoxnSiERrIU6rC474oTw==",
         "dependencies": {
@@ -26,13 +26,13 @@
       },
       "System.Reflection.Emit": {
         "type": "Direct",
-        "requested": "[4.*, 5.0.0)",
+        "requested": "[4.*, )",
         "resolved": "4.7.0",
         "contentHash": "VR4kk8XLKebQ4MZuKuIni/7oh+QGFmZW3qORd1GvBq/8026OpW501SzT/oypwiQl4TvT8ErnReh/NzY9u+C6wQ=="
       },
       "SystemTextJson.JsonDiffPatch": {
         "type": "Direct",
-        "requested": "[1.*, 2.0.0)",
+        "requested": "[1.*, )",
         "resolved": "1.3.0",
         "contentHash": "+h3SPaEsx544cAfd5x7GZUDjqfuXyUbY4ymR0vEQdtPJWK0CE9KFCs7wqSO/ShOtIPOJ1obmMlC/6vMq61oadg==",
         "dependencies": {
