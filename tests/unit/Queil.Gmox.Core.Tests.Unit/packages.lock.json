@@ -613,18 +613,18 @@
       "org.books": {
         "type": "Project",
         "dependencies": {
-          "Google.Protobuf": "3.19.1",
-          "Grpc.Core.Api": "2.42.0"
+          "Google.Protobuf": "[3.19.1, )",
+          "Grpc.Core.Api": "[2.42.0, )"
         }
       },
       "queil.gmox.core": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "6.0.5",
-          "Google.Protobuf": "3.0.0",
-          "Grpc.Core": "2.0.0",
-          "System.Reflection.Emit": "4.0.0",
-          "SystemTextJson.JsonDiffPatch": "1.0.0"
+          "FSharp.Core": "[6.0.5, )",
+          "Google.Protobuf": "[3.*, )",
+          "Grpc.Core": "[2.*, )",
+          "System.Reflection.Emit": "[4.*, )",
+          "SystemTextJson.JsonDiffPatch": "[1.*, )"
         }
       }
     }
