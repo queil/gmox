@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <NoWarn>NU1603</NoWarn>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+  </PropertyGroup>
+ </Project>

@@ -76,8 +76,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.21.4",
-        "contentHash": "2dmAaFK3brEBdte0vZDP7L/UZV8SgZXYweNPy5qHCbTzj+eTvQpRRAAmd4ErGXCPn6x5rZxEBSINGUJiGms4WA=="
+        "resolved": "3.21.5",
+        "contentHash": "d7zwRm0edg2cxqRynMD31F8HUUyicBT0l5M74EIsU6GAaq3dxxaZ/PpSPlso010W9nIXoVVKUYZSsiOspAOO/A=="
       },
       "Grpc.Core": {
         "type": "Transitive",
