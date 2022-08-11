@@ -4,15 +4,15 @@
     "net6.0": {
       "Google.Protobuf": {
         "type": "Direct",
-        "requested": "[3.19.1, )",
-        "resolved": "3.19.1",
-        "contentHash": "M6yun2BPdHkBjD3V14muZSt72azWHRJEx88ME2TyyH2+/ww6R3hIptjBFQQtO6pmkfLXW/NGQ4hADWSa9AmK2A=="
+        "requested": "[3.*, )",
+        "resolved": "3.21.5",
+        "contentHash": "d7zwRm0edg2cxqRynMD31F8HUUyicBT0l5M74EIsU6GAaq3dxxaZ/PpSPlso010W9nIXoVVKUYZSsiOspAOO/A=="
       },
       "Grpc.Core.Api": {
         "type": "Direct",
-        "requested": "[2.42.0, )",
-        "resolved": "2.42.0",
-        "contentHash": "12ciAZrp8orzYFZcruvzshhMEbbD4CAFOe9an1Fa4/c5ZrCtqUjWVPa1Dpk/1Pnv5E1KTeIHPuOtPTkpMLOCoQ==",
+        "requested": "[2.*, )",
+        "resolved": "2.47.0",
+        "contentHash": "oZXapxH/2WHAVALghNauo+r/bp6zjgQ6r0v8FizLLQg0/j/FkK2u3WZ7cLOL9Y5H4oLg+wLclO8FSvNTQpNR5Q==",
         "dependencies": {
           "System.Memory": "4.5.3"
         }
