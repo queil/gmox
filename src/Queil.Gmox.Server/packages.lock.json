@@ -32,14 +32,14 @@
       "Queil.Gmox.Core": {
         "type": "Direct",
         "requested": "[0.*, )",
-        "resolved": "0.4.0",
-        "contentHash": "McaOzr5cUXC+dfE8FdxYPIvwe2tODEzh1oJ4KuDSN9gMDq3D+o/SPj8A6wtSaz33yGeDQlY/17bWNkA6+exCAw==",
+        "resolved": "0.10.0",
+        "contentHash": "dfhKO3XA+MSTaHrRiUOEdOrm1p6BeG1pjELPoXSyi6RJRwqowTyNreQgf5z08HNZR0nLABSdxQB825LnUb69mA==",
         "dependencies": {
           "FSharp.Core": "6.0.5",
-          "Google.Protobuf": "[3.21.1, 4.0.0)",
-          "Grpc.Core": "[2.46.3, 3.0.0)",
-          "System.Reflection.Emit": "[4.7.0, 5.0.0)",
-          "SystemTextJson.JsonDiffPatch": "[1.3.0, 2.0.0)"
+          "Google.Protobuf": "3.21.5",
+          "Grpc.Core": "2.46.3",
+          "System.Reflection.Emit": "4.7.0",
+          "SystemTextJson.JsonDiffPatch": "1.3.0"
         }
       },
       "Saturn": {
@@ -85,8 +85,8 @@
       },
       "Google.Protobuf": {
         "type": "Transitive",
-        "resolved": "3.21.1",
-        "contentHash": "tYT6ez1N/ecOdxaaYFu9KxADHdAmRzwt9o4i4tO4wGYsGo2mAPDeHJKO2erfnCsL/Z+6C29o0QUJUJnlG2iDAA=="
+        "resolved": "3.21.5",
+        "contentHash": "d7zwRm0edg2cxqRynMD31F8HUUyicBT0l5M74EIsU6GAaq3dxxaZ/PpSPlso010W9nIXoVVKUYZSsiOspAOO/A=="
       },
       "Grpc.AspNetCore.Server": {
         "type": "Transitive",
