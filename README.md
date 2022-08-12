@@ -35,6 +35,18 @@ You can also use Gmox as a [dotnet template](#dotnet-template).
 
   Yes, in the dotnet cli mode you can specify multiple proto files after the `--proto` param as long as they're in a common root or self-contained. 
 
+* How to override ports?
+
+  **Dotnet tool mode**
+
+  Via cmdline parameters: `--serve-port` and `--control-port`
+
+  **Dotnet template mode**
+
+  * via env vars: `GMOX__PORTS__SERVE` and `GMOX__PORTS__CONTROL`
+  * via cmdline parameters: `--gmox:ports:serve=` and `--gmox:ports:control=`
+  * via any other method supported by `IConfiguration` (Microsoft.Extensions.Configuration)
+  
 ## Stubbing configuration
 
 Stub configuration consists of a fully-qualified method name (like `grpc.health.v1.Health/Check`),
